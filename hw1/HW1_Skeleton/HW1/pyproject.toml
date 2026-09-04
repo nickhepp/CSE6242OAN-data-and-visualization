@@ -1,0 +1,24 @@
+[project]
+name = "hw1"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Nick Heppermann", email = "nickhepp@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+hw1 = "hw1:main"
+
+[build-system]
+requires = ["uv_build>=0.12.9,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

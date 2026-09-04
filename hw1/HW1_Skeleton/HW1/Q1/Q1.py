@@ -2,6 +2,8 @@
 import csv
 import json
 import http.client
+from airport_client import AirportClient
+from airport import Airport
 #############################################################################################################################
 
 class Graph:
@@ -72,6 +74,11 @@ class Graph:
         return NotImplemented
 
 
+AIRPORTS_CMD = '/airports'
+FLIGHTS_CMD = '/flights'
+IWT_FLIGHTS_CMD = '/iwt_flights'
+
+
 def get_data(endpoint: str, host: str = 'localhost', port: int = 3000) -> list:
     """
     Make a GET request to the specified endpoint of the API.
@@ -83,6 +90,15 @@ def get_data(endpoint: str, host: str = 'localhost', port: int = 3000) -> list:
     :param port:     int - the API port (e.g. 3000)
     :rtype: list
     """
+
+    client = AirportClient(host, port)
+
+    retval = None
+    if (endpoint == AIRPORTS_CMD):
+        retval = client.get_airports()
+    
+
+
 
     return NotImplemented
 
@@ -157,8 +173,10 @@ if __name__ == "__main__":
     # Call get_data() to retrieve all airports from the API, and add all airports to the full-flight network.
     # --------------------------------------------------------------------------------------------------------
 
+    client = AirportClient()
 
-
+    vals = client.get_airports()
+    vals = vals
 
 
     # --------------------------------------------------------------------------------------------------------
