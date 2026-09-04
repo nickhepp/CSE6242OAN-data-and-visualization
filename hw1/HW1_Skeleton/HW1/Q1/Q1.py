@@ -96,9 +96,10 @@ def get_data(endpoint: str, host: str = 'localhost', port: int = 3000) -> list:
     retval = None
     if (endpoint == AIRPORTS_CMD):
         retval = client.get_airports()
-    
+    else:
+        raise ValueError(f"'{endpoint}' not expected." )
 
-
+    return retval
 
     return NotImplemented
 
@@ -173,10 +174,9 @@ if __name__ == "__main__":
     # Call get_data() to retrieve all airports from the API, and add all airports to the full-flight network.
     # --------------------------------------------------------------------------------------------------------
 
-    client = AirportClient()
+    airports = get_data(AIRPORTS_CMD)
+    airports = airports
 
-    vals = client.get_airports()
-    vals = vals
 
 
     # --------------------------------------------------------------------------------------------------------
