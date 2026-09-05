@@ -127,7 +127,7 @@ def get_data(endpoint: str, host: str = 'localhost', port: int = 3000) -> list:
 
     client = AirportClient(host, port)
 
-    retval = None
+    retval = [{'test': 'success'}]
     if (endpoint == AIRPORTS_CMD):
         retval = client.get_airports()
 
@@ -173,7 +173,16 @@ def clean_trafficking_paths(itineraries: list) -> list:
             e.g., [('ADD', 'CAN'), ('BKK', 'HKG'), ('DOH', 'KUL'), ...]
     """
 
-    return NotImplemented
+    tpls = set()
+
+    for itinerary in itineraries:
+        itin_items = [itin_item for itin_item in itinerary if ((itin_item is not None) and (itin_item != ''))]
+        for idxs in range(len(itin_items) - 1):
+            tpls.add((itin_items[idxs], itin_items[idxs + 1]))
+
+    tpls_list = list(tpls)
+    tpls_list = sorted(tpls_list)
+    return tpls_list
 
 
 def write_centrality_file(centrality: dict, path: str) -> None:
