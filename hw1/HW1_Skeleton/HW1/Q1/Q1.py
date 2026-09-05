@@ -96,12 +96,17 @@ def get_data(endpoint: str, host: str = 'localhost', port: int = 3000) -> list:
     retval = None
     if (endpoint == AIRPORTS_CMD):
         retval = client.get_airports()
+
+    elif (endpoint == FLIGHTS_CMD):
+        retval = client.get_flights()
+
+    elif (endpoint == IWT_FLIGHTS_CMD):
+        retval = client.get_iwt_flights()
+
     else:
         raise ValueError(f"'{endpoint}' not expected." )
 
     return retval
-
-    return NotImplemented
 
 
 def clean_trafficking_paths(itineraries: list) -> list:

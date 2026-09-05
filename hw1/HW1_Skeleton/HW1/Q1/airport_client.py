@@ -1,6 +1,8 @@
 import requests
 
 from airport import Airport
+from flight import Flight
+from iwt_flight import IwtFlight
 
 class AirportClient:
 
@@ -9,20 +11,33 @@ class AirportClient:
 
 
     def get_airports(self, iata = None) -> list[Airport]:
+        records = self._inner_get_json_items(lambda data: Airport(**data), "airports", iata)
+        return records 
 
+
+    def get_flights(self, iata = None) -> list[Flight]:
+        records = self._inner_get_json_items(lambda data: Flight(**data), "flights", iata)
+        return records 
+
+
+    def get_iwt_flights(self, iata = None) -> list[IwtFlight]:
+        records = self._inner_get_json_items(lambda data: IwtFlight(**data), "iwt_flights", iata)
+        return records 
+
+
+    def _inner_get_json_items(self, class_cstor, relative_url: str, iata = None) -> list:
         params = {}
         if (iata):
             params["iata"] = iata
 
-        response = requests.get(self._client_url("airports"), params=params)
+        response = requests.get(self._client_url(relative_url), params=params)
 
         if response.status_code != 200:
             response.raise_for_status()
             
         json_list = response.json()
-        records = [Airport(**item) for item in json_list]
-        return records 
-    
+        records = [class_cstor(item) for item in json_list]
+        return records
 
     def _client_url(self, relative_path: str) -> str:
         return f"{self.BASE_URL}{relative_path}"
