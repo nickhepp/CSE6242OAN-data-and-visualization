@@ -4,6 +4,8 @@ import json
 import http.client
 from airport_client import AirportClient
 from airport import Airport
+from flight import Flight
+from iwt_flight import IwtFlight
 #############################################################################################################################
 
 class Graph:
@@ -27,8 +29,9 @@ class Graph:
         :param iata: str - the IATA code of the airport (e.g. 'HKG')
         :param name: str - the name of the airport (e.g. 'Hong Kong International Airport')
         """
-
-        return NotImplemented
+        tpl = (iata, name)
+        if not tpl in self.nodes:
+            self.nodes.append(tpl)
 
 
     def add_edge(self, iata_a: str, iata_b: str) -> None:
@@ -41,7 +44,16 @@ class Graph:
         :param iata_b: str - IATA code of the other airport in the flight path
         """
 
-        return NotImplemented
+        # sort the values to make the comparison easier, lowest value first
+        first_node = iata_a
+        second_node = iata_b
+        if (second_node < first_node):
+            first_node = iata_b
+            second_node = iata_a
+
+        tpl = (first_node, second_node)
+        if not tpl in self.edges:
+            self.edges.append(tpl)
 
 
     def degree_centrality(self) -> dict:
@@ -178,17 +190,16 @@ if __name__ == "__main__":
     # STEP 1 — Load all airports from the API for the full_graph network
     # Call get_data() to retrieve all airports from the API, and add all airports to the full-flight network.
     # --------------------------------------------------------------------------------------------------------
-
-    airports = get_data(AIRPORTS_CMD)
-    airports = airports
-
+    airports: list[Airport] = get_data(AIRPORTS_CMD)
+    for airport in airports:
+        full_graph.add_node(airport.iata, airport.name)
 
 
     # --------------------------------------------------------------------------------------------------------
     # STEP 2 — Load all flights from the API for the full_graph network
     # Call get_data() to retrieve all flights from the API, and add all flights to the full-flight network.
     # --------------------------------------------------------------------------------------------------------
-
+    flights: list[Flight] = get_data(FLIGHTS_CMD)
 
 
 
