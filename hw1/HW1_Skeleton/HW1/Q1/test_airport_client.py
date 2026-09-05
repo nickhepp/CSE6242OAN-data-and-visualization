@@ -1,7 +1,7 @@
 import pytest
 
 from airport_client import AirportClient
-
+from flight import Flight
 
 @pytest.fixture
 def client():
@@ -33,7 +33,17 @@ def test__get_airports__one_requested__one_returned(client):
     assert len(airports) == 1
 
 
+def test__get_airports__one_requested__one_returned(client):
+
+    # ACT
+    airports = client.get_airports('STL')
+
+    # ASSERT
+    assert len(airports) == 1
+
+
 #################### flights
+
 
 def test__get_flights__all_requested__all_returned(client):
 
@@ -42,6 +52,22 @@ def test__get_flights__all_requested__all_returned(client):
 
     # ASSERT
     assert len(flights) > 100
+
+
+def test__get_flights__all_requested__zero_same_location(client):
+    '''
+    Make sure there are no flights that start and stop at the same location.
+    Verifying an assumption.
+    '''
+
+    # ARRANGE
+    flights: list[Flight] = client.get_flights()
+
+    # ACT
+    same_location_count = sum(1 for flight in flights if flight.airport_a == flight.airport_b)
+
+    # ASSERT
+    assert same_location_count == 0
 
 
 def test__get_flights__one_requested__one_returned(client):

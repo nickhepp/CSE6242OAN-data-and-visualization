@@ -8,6 +8,9 @@ from flight import Flight
 from iwt_flight import IwtFlight
 #############################################################################################################################
 
+
+
+
 class Graph:
 
     # Do not modify
@@ -19,6 +22,8 @@ class Graph:
         """
         self.nodes = []
         self.edges = []
+        self.NODE_IATA_IDX = 0
+        self.NODE_NAME_IDX = 1
 
 
     def add_node(self, iata: str, name: str) -> None:
@@ -45,14 +50,11 @@ class Graph:
         """
 
         # sort the values to make the comparison easier, lowest value first
-        first_node = iata_a
-        second_node = iata_b
-        if (second_node < first_node):
-            first_node = iata_b
-            second_node = iata_a
 
-        tpl = (first_node, second_node)
-        if not tpl in self.edges:
+
+        tpl = (iata_a, iata_b)
+        other_tpl = (iata_b, iata_a)
+        if not ((tpl in self.edges) or (other_tpl in self.edges)):
             self.edges.append(tpl)
 
 
@@ -82,8 +84,28 @@ class Graph:
 
         Note these examples are not the true centrality scores for those airports.
         """
+        ROUND_DIGITS = 6
+        dgr_cntrlty: dict[str, int] = {}
+        n_sub1 = len(self.nodes) - 1
 
-        return NotImplemented
+        all_iatas = set()
+
+        # go through all the nodes
+        for node in self.nodes:
+            all_iatas.add(node[self.NODE_IATA_IDX])
+
+        # go through all the edges
+        for edge in self.edges:
+            all_iatas.add(edge[0])
+            all_iatas.add(edge[1])
+
+        for iata in all_iatas:
+            edge_node_cnt = 0
+            for edge in self.edges:
+                edge_node_cnt += edge.count(iata)
+            dgr_cntrlty[iata] = round(edge_node_cnt/n_sub1 , ROUND_DIGITS)
+
+        return dgr_cntrlty
 
 
 AIRPORTS_CMD = '/airports'
@@ -115,8 +137,8 @@ def get_data(endpoint: str, host: str = 'localhost', port: int = 3000) -> list:
     elif (endpoint == IWT_FLIGHTS_CMD):
         retval = client.get_iwt_flights()
 
-    else:
-        raise ValueError(f"'{endpoint}' not expected." )
+    #else:
+    #    raise ValueError(f"'{endpoint}' not expected." )
 
     return retval
 

@@ -17,8 +17,13 @@ NAME_B = 'bbb_airport'
 IATA_C = 'ccc'
 NAME_C = 'ccc_airport'
 
+IATA_D = 'ddd'
+NAME_D = 'ddd_airport'
+
+IATA_EDGE0 = 'ED0'
 
 #################### add_node
+
 
 def test__add_node__first_value__single_node_added(graph):
 
@@ -65,6 +70,7 @@ def test__add_node__second_duplicate_value__only_one_node(graph):
 
 #################### add_edge
 
+
 def test__add_edge__first_value__single_edge_added(graph):
 
     # ARRANGE
@@ -93,6 +99,7 @@ def test__add_edge__second_value__two_edge_added(graph):
     assert IATA_B in graph.edges[1]
     assert IATA_C in graph.edges[1]
 
+
 def test__add_edge__second_duplicate_value__only_one_edge(graph):
 
     # ARRANGE
@@ -105,3 +112,50 @@ def test__add_edge__second_duplicate_value__only_one_edge(graph):
     assert len(graph.edges) == 1
     assert IATA_A in graph.edges[0]
     assert IATA_B in graph.edges[0]
+
+# Test Failed: Element counts were not equal:
+# First has 1, Second has 0:  ('HND', 'DXB')
+# First has 1, Second has 0:  ('PVG', 'ATL')
+# First has 1, Second has 0:  ('DFW', 'ATL')
+# First has 1, Second has 0:  ('PVG', 'DXB')
+# First has 0, Second has 1:  ('DXB', 'HND')
+# First has 0, Second has 1:  ('ATL', 'PVG')
+# First has 0, Second has 1:  ('ATL', 'DFW')
+# First has 0, Second has 1:  ('DXB', 'PVG') :  Edges not added correctly.
+
+
+
+
+
+#################### degree_centrality
+
+
+def test__degree_centrality__first_value__single_edge_added(graph):
+
+    # ARRANGE
+    graph.add_node(IATA_A, NAME_A)
+    graph.add_node(IATA_B, NAME_B)
+    graph.add_node(IATA_C, NAME_C)
+    graph.add_node(IATA_D, NAME_D)
+    # IATA_EDGE0 intentionally not included
+
+                                       # used=IATA_A  IATA_B  IATA_C  IATA_D  IATA_EDGE0
+    graph.add_edge(IATA_A, IATA_D)     #           1       0       0       1           0
+    graph.add_edge(IATA_A, IATA_C)     #           2       0       1       1           0
+    graph.add_edge(IATA_D, IATA_EDGE0) #           2       0       1       2           1
+
+    n_sub1 = 4 - 1
+    ROUND_DIGITS = 6
+    expected_degree_centrality = {
+        IATA_A: round(2/n_sub1, ROUND_DIGITS),
+        IATA_B: round(0, ROUND_DIGITS),
+        IATA_C: round(1/n_sub1, ROUND_DIGITS),
+        IATA_D: round(2/n_sub1, ROUND_DIGITS),
+        IATA_EDGE0: round(1/n_sub1, ROUND_DIGITS),
+    }
+
+    # ACT
+    degree_centrality: dict[str, float] = graph.degree_centrality()
+
+    # ASSERT
+    assert degree_centrality == expected_degree_centrality
