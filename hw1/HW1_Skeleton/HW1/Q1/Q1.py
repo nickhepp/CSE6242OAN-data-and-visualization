@@ -6,10 +6,11 @@ from airport_client import AirportClient
 from airport import Airport
 from flight import Flight
 from iwt_flight import IwtFlight
+import csv
 #############################################################################################################################
 
 
-
+ROUND_DIGITS = 6
 
 class Graph:
 
@@ -84,7 +85,7 @@ class Graph:
 
         Note these examples are not the true centrality scores for those airports.
         """
-        ROUND_DIGITS = 6
+
         dgr_cntrlty: dict[str, int] = {}
         n_sub1 = len(self.nodes) - 1
 
@@ -208,9 +209,39 @@ def write_centrality_file(centrality: dict, path: str) -> None:
                               (should either be 'full_centrality.csv' or 'iwt_centrality.csv')
     """
 
-    return NotImplemented
+    IATA_VAL_NAME = "iata"
+    DEGREE_CENTRALITY_VAL_NAME = "degree_centrality"
+    list_of_dicts: list[dict] = [
+        {IATA_VAL_NAME:iata, DEGREE_CENTRALITY_VAL_NAME: round(degree, ROUND_DIGITS)} 
+        for iata, degree
+        in centrality.items()
+    ]
+    list_of_dicts = sorted(list_of_dicts, key=lambda item: item[DEGREE_CENTRALITY_VAL_NAME], reverse=True)
+
+    headers = [IATA_VAL_NAME, DEGREE_CENTRALITY_VAL_NAME]
+
+    with open(path, "w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=headers, lineterminator='\n')
+        writer.writeheader()
+        writer.writerows(list_of_dicts)
 
 
+
+def write_cleanded_iwt(cleanded_iwts: list[tuple[str,str]]) -> None:
+
+    IATA_A_VAL_NAME = "iata_a"
+    IATA_B_VAL_NAME = "iata_b"
+    list_of_dicts: list[dict] = [
+        {IATA_A_VAL_NAME: cleanded_iwt[0], IATA_B_VAL_NAME: cleanded_iwt[1]}
+        for cleanded_iwt
+        in cleanded_iwts
+    ]
+
+    headers = [IATA_A_VAL_NAME, IATA_B_VAL_NAME]
+    with open('cleaned_iwt.csv', "w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=headers, lineterminator='\n')
+        writer.writeheader()
+        writer.writerows(list_of_dicts)
 
 if __name__ == "__main__":
 
@@ -231,7 +262,8 @@ if __name__ == "__main__":
     # Call get_data() to retrieve all flights from the API, and add all flights to the full-flight network.
     # --------------------------------------------------------------------------------------------------------
     flights: list[Flight] = get_data(FLIGHTS_CMD)
-
+    for flight in flights:
+        full_graph.add_edge(flight.airport_a, flight.airport_b)
 
 
 
@@ -245,8 +277,9 @@ if __name__ == "__main__":
 
     # You may use the airports response already retrieved in Step 1. Do not make another API call.
     # --------------------------------------------------------------------------------------------------------
-
-
+    iwt_airports = [test_airport for test_airport in airports if test_airport.iwt_incidents_observed_count != 0]
+    for iwt_airport in iwt_airports:
+        iwt_graph.add_node(iwt_airport.iata, iwt_airport.name)
 
 
 
@@ -258,10 +291,17 @@ if __name__ == "__main__":
     # e.g., [{'airport_a': 'JNB', 'airport_b': 'DOH', 'airport_c': None, ...}, ...]
     #     -> [['JNB', 'DOH', None, None, None], ...]
     # --------------------------------------------------------------------------------------------------------
-    
+    iwt_flights: list[IwtFlight] = get_data(IWT_FLIGHTS_CMD)
+    list_of_iwt_flights = [
+        [iwt_flight.airport_a, iwt_flight.airport_b, iwt_flight.airport_c, iwt_flight.airport_d, iwt_flight.airport_e] 
+        for iwt_flight in iwt_flights
+    ]
 
-    
+    trafficking_paths: list[tuple[str, str]] = clean_trafficking_paths(list_of_iwt_flights)
+    for trafficking_path in trafficking_paths:
+        iwt_graph.add_edge(trafficking_path[0], trafficking_path[1])
 
+    write_cleanded_iwt(trafficking_paths)
 
     # --------------------------------------------------------------------------------------------------------
     # STEP 5 — Compute degree centrality and write to file for both networks
@@ -269,6 +309,8 @@ if __name__ == "__main__":
     # full_centrality.csv should contain the degree centrality for the full flight network
     # iwt_centrality.csv should contain the degree centrality for the IWT sub-network
     # --------------------------------------------------------------------------------------------------------
+    full_graph_centrality = full_graph.degree_centrality()
+    iwt_graph_centrality = iwt_graph.degree_centrality()
 
-
-
+    write_centrality_file(full_graph_centrality, 'full_centrality.csv')
+    write_centrality_file(iwt_graph_centrality, 'iwt_centrality.csv')

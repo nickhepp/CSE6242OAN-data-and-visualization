@@ -1,7 +1,6 @@
+from pathlib import Path
 from Q1 import clean_trafficking_paths
-
-
-
+from Q1 import write_centrality_file
 
 #################### clean_trafficking_paths
 
@@ -29,23 +28,20 @@ def test__clean_trafficking_paths():
     assert retvals[4] == ('JNB', 'DOH')
     assert retvals[5] == ('KUL', 'DOH')
 
-# Test Failed: Lists differ: [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', '[23 chars]'A')] != [('', ''), ('A', ''), ('A', 'B'), ('A', 'C')[55 chars]'A')]
 
-# First differing element 0:
-# ('A', 'B')
-# ('', '')
+#################### write_centrality_file
 
-# Second list contains 3 additional elements.
-# First extra element 6:
-# ('C', '')
 
-# - [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D'), ('C', 'A'), ('D', 'A')]
-# + [('', ''),
-# +  ('A', ''),
-# +  ('A', 'B'),
-# +  ('A', 'C'),
-# +  ('B', 'C'),
-# +  ('B', 'D'),
-# +  ('C', ''),
-# +  ('C', 'A'),
-# +  ('D', 'A')] :  Paths not sorted properly.
+def test__write_centrality_file__example_data() -> None:
+
+    test_dict = {
+        'BKK': 0.016046,
+        'HKG': 0.022774,
+    }
+
+    file_path = 'full_centrality.csv'
+    write_centrality_file(test_dict, file_path)
+
+    content = Path(file_path).read_text(encoding="utf-8")
+    lines = content.split("\n")
+    lines = lines
