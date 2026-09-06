@@ -216,7 +216,12 @@ def write_centrality_file(centrality: dict, path: str) -> None:
         for iata, degree
         in centrality.items()
     ]
-    list_of_dicts = sorted(list_of_dicts, key=lambda item: item[DEGREE_CENTRALITY_VAL_NAME], reverse=True)
+
+    # - Sorted descending by centrality score                       --> negative number as first item
+    # - Ties broken alphabetically by IATA code (ascending)         --> regular str as second item
+    list_of_dicts = sorted(list_of_dicts, key=lambda item: (-item[DEGREE_CENTRALITY_VAL_NAME], item[IATA_VAL_NAME]))
+    
+
 
     headers = [IATA_VAL_NAME, DEGREE_CENTRALITY_VAL_NAME]
 
