@@ -119,6 +119,19 @@ def validate_headers_match(file_headers: list[str], expected_headers: list[str])
     if (file_headers != expected_headers):
         raise ValueError(f"File headers ({file_headers}) do not match expected headers ({expected_headers}).")
 
+def insert_data_file(connection: Connection, path: str, insert_statement: str, expected_headers: list[str]):
+    with open(path, mode='r', encoding='utf-8', newline='') as file:
+        csv_reader = csv.reader(file)
+        first_row: bool = True
+        cursor = connection.cursor()
+        for row in csv_reader:
+            if (first_row):
+                validate_headers_match(row, expected_headers)
+                first_row = False
+            else:
+                cursor.execute(insert_statement, row)
+        connection.commit()
+
 
 def part_1_b_i(connection: Connection, path: str) -> None:
     ############### CREATE IMPORT CODE BELOW ############################
@@ -126,73 +139,140 @@ def part_1_b_i(connection: Connection, path: str) -> None:
         INSERT INTO incidents (report_id, category, date)
         VALUES (?, ?, ?);
         """
-    with open(path, mode='r', encoding='utf-8', newline='') as file:
-        csv_reader = csv.reader(file)
-        first_row: bool = True
-        cursor = connection.cursor()
-        for row in csv_reader:
-            if (first_row):
-                validate_headers_match(row, ['report_id', 'category', 'date'])
-                first_row = False
-            else:
-                cursor.execute(PART_1_B_I_STATEMENT, row)
-        connection.commit()
-            
-
-                
+    insert_data_file(connection, path, PART_1_B_I_STATEMENT, ['report_id', 'category', 'date'])
     ######################################################################
 
 
 def part_1_b_ii(connection: Connection, path: str) -> None:
     ############### CREATE IMPORT CODE BELOW ############################
-    pass
+    PART_1_B_II_STATEMENT = """
+        INSERT INTO details (report_id, subject, transport_mode, detection)
+        VALUES (?, ?, ?, ?);
+        """
+    insert_data_file(connection, path, PART_1_B_II_STATEMENT, ['report_id', 'subject', 'transport_mode', 'detection'])
     ######################################################################
 
 
 def part_1_b_iii(connection: Connection, path: str) -> None:
     ############### CREATE IMPORT CODE BELOW ############################
-    pass
+    PART_1_B_III_STATEMENT = """
+        INSERT INTO outcomes (report_id, outcome, num_ppl_fined, fine, num_ppl_arrested, prison_time, prison_time_unit)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
+        """
+    insert_data_file(connection, path, PART_1_B_III_STATEMENT, ['report_id', 'outcome', 'num_ppl_fined', 'fine', 'num_ppl_arrested', 'prison_time', 'prison_time_unit'])
     ######################################################################
 
 
 def part_2_a() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    # a. incident_index for the report_id column in the incidents table
+    query = "CREATE INDEX incident_index ON incidents (report_id);"
     ######################################################################
     return query
 
 
 def part_2_b() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    # b. detail_index for the report_id column in the details table
+    query = "CREATE INDEX detail_index ON details (report_id);"
     ######################################################################
     return query
 
 
 def part_2_c() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    # c. outcome_index for the report_id column in the outcomes table
+    query = "CREATE INDEX outcome_index ON outcomes (report_id);"
     ######################################################################
     return query
 
 
 def part_3() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        WITH the_window AS (
+            SELECT COUNT(*) AS window_count 
+            FROM incidents i
+            WHERE '2018-01-01' <= i.date AND 
+                i.date <= '2020-12-31'
+        )
+        SELECT ROUND(100.0 * CAST(the_window.window_count AS REAL) / COUNT(*), 2)  AS Percentage
+        FROM incidents, the_window;
+        """
     ######################################################################
     return query
 
 
 def part_4() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        SELECT transport_mode, COUNT(*) AS count
+        FROM details 
+        WHERE detection = 'Intelligence'
+        AND details.transport_mode != ''
+        AND details.transport_mode IS NOT NULL 
+        GROUP BY transport_mode
+        ORDER BY count DESC
+        LIMIT 3
+        """
     ######################################################################
     return query
 
 
 def part_5() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        WITH detections_filter AS (
+            SELECT 
+                deets.detection 
+                --,COUNT(deets.detection) as detection_count
+            FROM incidents inc
+            INNER JOIN details deets
+                ON 
+                    deets.report_id = inc.report_id
+                    AND deets.detection != ''
+                    AND deets.detection IS NOT NULL
+            INNER JOIN outcomes outs 
+                ON
+                    outs.report_id = deets.report_id 
+                    AND outs.num_ppl_arrested >= 1 -- Only include detection methods with at least 100 incidents (with one or more arrests)
+            GROUP BY deets.detection
+            HAVING COUNT(deets.detection) > 100 -- Only # include detection methods with at least 100 incidents 
+        )
+
+        SELECT 
+            deets.detection 
+            ,COUNT(*) AS "count"
+            ,ROUND(AVG(outs.num_ppl_arrested),2) AS avg_ppl_arrested
+
+        FROM incidents inc
+
+        INNER JOIN outcomes outs
+            ON 
+                outs.report_id = inc.report_id
+                AND outs.num_ppl_arrested >= 1 -- Only include incidents with one or more arrests in the average calculation
+
+        INNER JOIN details deets
+            ON 
+                deets.report_id = inc.report_id
+                
+        INNER JOIN detections_filter
+            ON 
+                deets.detection = detections_filter.detection
+            
+        GROUP BY deets.detection
+
+        ORDER BY avg_ppl_arrested DESC
+
+        LIMIT 3 -- Identify the three detection methods with the highest number of average arrests across incidents.		
+    """
+
+
+# Identify detection methods with high arrest rates.   Sort by highest average
+# to lowest.
+# • Output format and example row values (detection, count, avg_ppl_arrested):
+
+
     ######################################################################
     return query
 
