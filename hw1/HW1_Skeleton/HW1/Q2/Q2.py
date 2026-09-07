@@ -367,14 +367,22 @@ def part_8_a() -> str:
 
 def part_8_b() -> str:
     ############### EDIT SQL STATEMENT ############################
-    query = ""
+    query = """
+            INSERT INTO incident_overviews (report_id, subject)
+            SELECT report_id, subject
+            FROM details
+            """
     ######################################################################
     return query
 
     
 def part_8_c():
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        SELECT COUNT(*) AS "count"
+        FROM incident_overviews
+        WHERE incident_overviews MATCH 'subject:NEAR("dead" "pangolin", 2)';
+        """
     ######################################################################
     return query
 
