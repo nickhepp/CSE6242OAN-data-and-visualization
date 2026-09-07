@@ -73,28 +73,73 @@ def GTusername() -> str:
 
 def part_1_a_i() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+            CREATE TABLE IF NOT EXISTS incidents (
+                report_id TEXT,
+                category  TEXT,
+                date  TEXT
+            );
+            """
     ######################################################################
     return query
 
 
 def part_1_a_ii() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+            CREATE TABLE IF NOT EXISTS details (
+                report_id TEXT,
+                subject TEXT,
+                transport_mode TEXT,
+                detection TEXT
+            );
+            """
     ######################################################################
     return query
 
 
 def part_1_a_iii() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        CREATE TABLE IF NOT EXISTS outcomes(
+            report_id TEXT,
+            outcome TEXT,
+            num_ppl_fined INTEGER,
+            fine REAL,
+            num_ppl_arrested INTEGER,
+            prison_time REAL,
+            prison_time_unit TEXT
+        );            
+        """
     ######################################################################
     return query
 
 
+def validate_headers_match(file_headers: list[str], expected_headers: list[str]) -> None:
+    if (file_headers != expected_headers):
+        raise ValueError(f"File headers ({file_headers}) do not match expected headers ({expected_headers}).")
+
+
 def part_1_b_i(connection: Connection, path: str) -> None:
     ############### CREATE IMPORT CODE BELOW ############################
-    pass
+    PART_1_B_I_STATEMENT = """
+        INSERT INTO incidents (report_id, category, date)
+        VALUES (?, ?, ?);
+        """
+    with open(path, mode='r', encoding='utf-8', newline='') as file:
+        csv_reader = csv.reader(file)
+        first_row: bool = True
+        cursor = connection.cursor()
+        for row in csv_reader:
+            if (first_row):
+                validate_headers_match(row, ['report_id', 'category', 'date'])
+                first_row = False
+            else:
+                cursor.execute(PART_1_B_I_STATEMENT, row)
+        connection.commit()
+            
+
+                
     ######################################################################
 
 
