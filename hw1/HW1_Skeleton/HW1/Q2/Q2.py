@@ -279,28 +279,88 @@ def part_5() -> str:
 
 def part_6() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        WITH categories_filter AS (
+            SELECT 
+                incs.category
+                ,COUNT(incs.category) as category_count
+            FROM incidents incs
+            GROUP BY incs.category
+            HAVING COUNT(incs.category) > 50 -- Only include incident categories with more than 50 incidents.
+        )
+        ,
+        prison_time_by_report AS (
+            SELECT 
+                report_id
+                -- Use the prison_time_unit column to convert prison_time into days if necessary (assume
+                -- 365 days in a year, 30 in a month, 7 in a week). If prison_time_unit is N/A, then set prison_time to 0 days. 
+                ,CASE 
+                    WHEN prison_time_unit = 'N/A' 		THEN 0
+                    WHEN prison_time_unit = 'Days' 		THEN prison_time
+                    WHEN prison_time_unit = 'Weeks' 	THEN prison_time * 7 
+                    WHEN prison_time_unit = 'Months' 	THEN prison_time * 30
+                    WHEN prison_time_unit = 'Years' 	THEN prison_time * 365 
+                END prison_time
+                --,prison_time
+                --,prison_time_unit
+            FROM outcomes
+        )
+
+        -- Output format and example row values (category, count, avg_prison_time_days)
+        SELECT 
+            incs.category
+            ,COUNT(*) AS "count"
+            ,ROUND(AVG(prison_time_by_report.prison_time), 2) AS avg_prison_time_days
+
+        FROM incidents incs
+        INNER JOIN categories_filter
+            ON categories_filter.category = incs.category 
+        INNER JOIN prison_time_by_report
+            ON prison_time_by_report.report_id = incs.report_id 
+        GROUP BY incs.category
+        ORDER BY avg_prison_time_days DESC
+        """
     ######################################################################
     return query
 
 
 def part_7_a() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+        CREATE VIEW IF NOT EXISTS fines AS
+        SELECT
+            incs.report_id
+            ,incs.date
+            ,outs.num_ppl_fined
+            ,CAST(outs.fine AS REAL) AS fine
+            --,CAST(ROUND(outs.fine, 2) AS REAL) AS fine
+        FROM incidents incs
+        INNER JOIN outcomes outs
+        ON outs.report_id = incs.report_id AND outs.num_ppl_fined > 0
+        """
     ######################################################################
     return query
 
 
 def part_7_b() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = """
+		SELECT 
+            SUBSTR("date", 1, 4) AS year
+            ,SUM(num_ppl_fined) AS total_ppl_fined
+            ,ROUND(SUM(fine), 2) AS total_fine_amount
+        FROM fines
+        GROUP BY year
+        ORDER BY total_fine_amount DESC
+        LIMIT 3
+        """
     ######################################################################
     return query
 
 
 def part_8_a() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = ""
+    query = "CREATE VIRTUAL TABLE incident_overviews USING fts5(report_id, subject);"
     ######################################################################
     return query
 
