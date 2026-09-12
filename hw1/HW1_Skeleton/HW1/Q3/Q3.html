@@ -6,6 +6,12 @@
 <head>
   <style>    
     /* Define css rules here */
+    div.bar {
+      display: inline-block;
+      width: 20px;
+      height: 75px;   /* We'll override height later */
+      background-color: teal;
+    }
   </style>
 <title></title>
 </head>
@@ -18,22 +24,38 @@
 
 
   <script>
+
+    const maxElements = 5;
+
     // define the dimensions and margins for the graph
-    var margin;
-    var width;
-    var height;
+    var margin = {top: 20, right: 30, bottom: 30, left: 40};
+    const width = 1000;
+    const height = 1000;
 
 
     // create scales x & y for X and Y axis and set their ranges
-    var x;
-    var y;
-
+    // var x = d3.scaleLinear()
+    //   .domain([0, 1])
+    //   .range([margin.left, width - margin.right]);
+    // var y = d3.scaleLinear()
+    //   .domain([0, 1])
+    //   .range([height - margin.bottom, margin.top]);
+    const barHeight = height / maxElements;
+    var barPadding = 2;
 
     // append svg element to the body of the page
     var svg = d3.select("body").append("svg")
-	   	// set the id, dimensions and position of the svg element 	
-	    .append("g")
+	   	// set the id, dimensions and position of the svg element
+      .attr("id", "svg1")
+      .attr("width", width)
+      .attr("height", height);
+      
+      
+	  gContainer = svg.append("g")
 	    .attr("id", "container");
+
+    gBars = gContainer.append("g")
+	    .attr("id", "bars");
 
 
     // Get the data and filter for top 5 most trafficked species
@@ -41,38 +63,66 @@
 	
     d3.dsv(",", pathToCsv, function (d) {
       return {
-        // format data attributes if required
+        // format data attributes if required, species,count
+        species: d.species,  //No conversion
+        count: parseInt(d.count)
       }
     }).then(function (data) {
       console.log(data); // you should see the data in your browser's developer tools console 
       
+
+      // The bar plot must display one bar for each of the five most trafficked species by count. Each bar’s length
+      // corresponds to the number of wildlife trafficking incidents involving that species between 2015 and 2023, represented
+      // by the “count” column in our dataset.
+      const sortedData = data.sort((a, b) => b.count - a.count); 
+      sortedData.length = 5;
+
+      const maxCount = sortedData[0].count;
+
+
+
       /* Create bar plot using data from csv */
 
       // set the domains of X and Y scales based on data
-      x.domain();
-      y.domain();
+      xScale = d3.scaleLinear()
+          .domain([0, maxCount])
+          .range([margin.left, width - margin.right]);
+      yScale = d3.scaleLinear()
+          .domain([0, height])
+          .range([height - margin.bottom, margin.top]);
 
       // Add bars to svg - create new elements based on your data
-      svg.selectAll()
+      gBars.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", function(d, i) {
+          return i * (height / data.length);
+        })
+        .attr("width", function(d) {
+          return d.count * width / maxCount;
+        })
+        .attr("height", height / data.length - barPadding);
 
 
       // Add the X Axis
-      svg.append()
+      gContainer.append("g").attr("id", "x_axis");
 
-      // Add the text label for X Axis
-      svg.append()
+      // // Add the text label for X Axis
+      // svg.append()
 
-      // Add the Y Axis
-      svg.append()
+      // // Add the Y Axis
+      // svg.append()
 
-      // Add the text label for Y axis
-      svg.append()
+      // // Add the text label for Y axis
+      // svg.append()
 
-      // Add GT username
-      svg.append()
+      // // Add GT username
+      // svg.append()
 
-      // Add Title
-      svg.append()
+      // // Add Title
+      // svg.append()
 
 
     }).catch(function (error) {
