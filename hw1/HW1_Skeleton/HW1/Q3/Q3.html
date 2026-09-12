@@ -28,7 +28,7 @@
     const maxElements = 5;
 
     // define the dimensions and margins for the graph
-    var margin = {top: 20, right: 30, bottom: 30, left: 40};
+    var margin = {top: 50, right: 30, bottom: 30, left: 40};
     const width = 1000;
     const height = 1000;
 
@@ -40,8 +40,14 @@
     // var y = d3.scaleLinear()
     //   .domain([0, 1])
     //   .range([height - margin.bottom, margin.top]);
-    const barHeight = height / maxElements;
     var barPadding = 2;
+    const barHeight = (
+        height 
+        - margin.top 
+        - margin.bottom
+        - (maxElements - 1) * barPadding
+      ) / maxElements;
+    
 
     // append svg element to the body of the page
     var svg = d3.select("body").append("svg")
@@ -51,7 +57,7 @@
       .attr("height", height);
       
       
-	  gContainer = svg.append("g")
+    gContainer = svg.append("g")
 	    .attr("id", "container");
 
     gBars = gContainer.append("g")
@@ -96,17 +102,25 @@
         .append("rect")
         .attr("x", 0)
         .attr("y", function(d, i) {
-          return i * (height / data.length);
+          var yOffset = margin.top;
+          yOffset += i * (barPadding + barHeight);
+          return yOffset;
         })
         .attr("width", function(d) {
           return d.count * width / maxCount;
         })
-        .attr("height", height / data.length - barPadding);
+        .attr("height", barHeight);
 
 
       // Add the X Axis
-      xAxis = gContainer.append("g").attr("id", "x_axis");
-      
+      xAxisGroup = gContainer
+          .append("g")
+          .attr("id", "x_axis")
+          .attr("class", "axis")
+          .attr("transform", "translate(0," + (height - margin.bottom) + ")");
+      var xAxis = d3.axisBottom().scale(xScale);
+      xAxisGroup.call(xAxis);
+
       // Add the text label for X Axis
       xAxisLabel = gContainer
         .append("text")
@@ -117,7 +131,13 @@
 
 
       // Add the Y Axis
-      yAxis = gContainer.append("g").attr("id", "y_axis");
+      yAxisGroup = gContainer
+          .append("g")
+          .attr("id", "y_axis")
+          .attr("class", "axis")
+          .attr("transform", "translate(0, 0)");
+      var yAxis = d3.axisLeft().scale(yScale);
+      yAxisGroup.call(yAxis);
 
       // Add the text label for Y axis:
       yAxisLabel = gContainer
