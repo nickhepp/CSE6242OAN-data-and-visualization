@@ -28,7 +28,7 @@
     const maxElements = 5;
 
     // define the dimensions and margins for the graph
-    var margin = {top: 50, right: 30, bottom: 30, left: 40};
+    var margin = {top: 50, right: 30, bottom: 30, left: 70};
     const width = 1000;
     const height = 1000;
 
@@ -91,9 +91,13 @@
       xScale = d3.scaleLinear()
           .domain([0, maxCount])
           .range([margin.left, width - margin.right]);
-      yScale = d3.scaleLinear()
-          .domain([0, height])
-          .range([height - margin.bottom, margin.top]);
+      // yScale = d3.scaleLinear()
+      //     .domain([0, height])
+      //     .range([height - margin.bottom, margin.top]);
+
+      yScale = d3.scaleBand()
+              .domain(speciesNames)
+              .range([margin.top, height - margin.bottom]);
 
       // Add bars to svg - create new elements based on your data
       gBars.selectAll("rect")
