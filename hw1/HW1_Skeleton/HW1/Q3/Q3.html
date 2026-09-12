@@ -81,7 +81,7 @@
 
 
 
-      /* Create bar plot using data from csv */
+      /* Create bar plot using data from csv */ 
 
       // set the domains of X and Y scales based on data
       xScale = d3.scaleLinear()
@@ -107,22 +107,67 @@
 
 
       // Add the X Axis
-      gContainer.append("g").attr("id", "x_axis");
+      xAxis = gContainer.append("g").attr("id", "x_axis");
+      
+      // Add the text label for X Axis
+      xAxisLabel = gContainer
+        .append("text")
+        .attr("id", "x_axis_label")
+        .text("Count");
+      //   |
+      //   | +-- (x-axis elements)
 
-      // // Add the text label for X Axis
-      // svg.append()
 
-      // // Add the Y Axis
-      // svg.append()
+      // Add the Y Axis
+      yAxis = gContainer.append("g").attr("id", "y_axis");
 
-      // // Add the text label for Y axis
-      // svg.append()
+      // Add the text label for Y axis:
+      yAxisLabel = gContainer
+        .append("text")
+        .attr("id", "y_axis_label")
+        .text("Species");
 
       // // Add GT username
       // svg.append()
 
       // // Add Title
       // svg.append()
+
+
+/*
+
+<svg id="svg1"> plot
+| width: 900
+| height: 370
+|
++-- <g id="container"> containing Q3.a plot elements
+|
++-- <g id="bars"> containing bars
+|
++-- <g id="x_axis"> x-axis
+| |
+| +-- (x-axis elements)
+|
++-- <text id="x_axis_label"> x-axis label
+|
++-- <g id="y_axis"> y-axis
+| |
+| +-- (y-axis elements)
+|
++-- <text id="y_axis_label"> y-axis label
+|
++-- <text id="credit"> GTUsername
+|
++-- <text id="title"> chart title
+
+
+
+
+
+
+*/
+
+
 
 
     }).catch(function (error) {
