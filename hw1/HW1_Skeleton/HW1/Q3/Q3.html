@@ -75,11 +75,10 @@
       // corresponds to the number of wildlife trafficking incidents involving that species between 2015 and 2023, represented
       // by the “count” column in our dataset.
       const sortedData = data.sort((a, b) => b.count - a.count); 
-      sortedData.length = 5;
+      sortedData.length = maxElements;
 
       const maxCount = sortedData[0].count;
-
-
+      const speciesNames = sortedData.map(dItem => dItem.species);
 
       /* Create bar plot using data from csv */ 
 
@@ -127,11 +126,17 @@
         .attr("id", "y_axis_label")
         .text("Species");
 
-      // // Add GT username
-      // svg.append()
+      // Add GT username
+      gtUsername = gContainer
+        .append("text")
+        .attr("id", "credit")
+        .text("nhepperm3");
 
-      // // Add Title
-      // svg.append()
+      // Add Title
+      gtUsername = gContainer
+        .append("text")
+        .attr("id", "title")
+        .text("Wildlife Trafficking Incidents per Species (2015 to 2023)");
 
 
 /*
