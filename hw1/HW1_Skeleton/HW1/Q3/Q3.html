@@ -13,7 +13,7 @@
       background-color: teal;
     }
   </style>
-<title></title>
+<title>wildlife trafficking incidents per species (2015 to 2023)</title>
 </head>
 
 <body>
@@ -32,20 +32,20 @@
     const width = 1000;
     const height = 1000;
 
+    const colorByHex = {
+      0 : "#E69F00",
+      1 : "#56B4E9",
+      2 : "#009E73",
+      3 : "#F0E442",
+      4 : "#0072B2"
+    };
 
-    // create scales x & y for X and Y axis and set their ranges
-    // var x = d3.scaleLinear()
-    //   .domain([0, 1])
-    //   .range([margin.left, width - margin.right]);
-    // var y = d3.scaleLinear()
-    //   .domain([0, 1])
-    //   .range([height - margin.bottom, margin.top]);
     var barPadding = 2;
     const barHeight = (
         height 
         - margin.top 
         - margin.bottom
-        - (maxElements - 1) * barPadding
+        - (maxElements * barPadding)
       ) / maxElements;
     
 
@@ -91,9 +91,6 @@
       xScale = d3.scaleLinear()
           .domain([0, maxCount])
           .range([margin.left, width - margin.right]);
-      // yScale = d3.scaleLinear()
-      //     .domain([0, height])
-      //     .range([height - margin.bottom, margin.top]);
 
       yScale = d3.scaleBand()
               .domain(speciesNames)
@@ -104,16 +101,19 @@
         .data(data)
         .enter()
         .append("rect")
-        .attr("x", 0)
+        .attr("x", margin.left)
         .attr("y", function(d, i) {
           var yOffset = margin.top;
           yOffset += i * (barPadding + barHeight);
           return yOffset;
         })
         .attr("width", function(d) {
-          return d.count * width / maxCount;
+          return d.count * (width - margin.left - margin.right) / maxCount;
         })
-        .attr("height", barHeight);
+        .attr("height", barHeight)
+        .style("fill", function(d, i) {
+          return colorByHex[i];
+        });
 
 
       // Add the X Axis
@@ -130,16 +130,13 @@
         .append("text")
         .attr("id", "x_axis_label")
         .text("Count");
-      //   |
-      //   | +-- (x-axis elements)
-
 
       // Add the Y Axis
       yAxisGroup = gContainer
           .append("g")
           .attr("id", "y_axis")
           .attr("class", "axis")
-          .attr("transform", "translate(0, 0)");
+          .attr("transform", `translate(${margin.left}, 0)`);
       var yAxis = d3.axisLeft().scale(yScale);
       yAxisGroup.call(yAxis);
 
