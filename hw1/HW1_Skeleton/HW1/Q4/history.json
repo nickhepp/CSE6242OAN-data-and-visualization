@@ -382,5 +382,47 @@
     "repeat": false,
     "repeatCount": 10,
     "description": "Text transform on cells in column Airport using expression value.replace(\"Bangkok International Suvarnabhumi Airport\",\"Bangkok Suvarnabhumi International Airport\")"
+  },
+  {
+    "op": "core/text-transform",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "list",
+          "name": "Common Name",
+          "expression": "isBlank(value)",
+          "columnName": "Common Name",
+          "invert": false,
+          "omitBlank": false,
+          "omitError": false,
+          "selection": [
+            {
+              "v": {
+                "v": false,
+                "l": "false"
+              }
+            }
+          ],
+          "selectBlank": false,
+          "selectError": false
+        },
+        {
+          "type": "text",
+          "name": "Subject",
+          "columnName": "Subject",
+          "query": "Airport",
+          "mode": "text",
+          "caseSensitive": true,
+          "invert": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "columnName": "Airport",
+    "expression": "jython:vals = value.split(' ')\nvals = [val.replace(\",\", \"\").replace(';', '').replace('\\'s', \"\").replace('-','') for val in vals]\nindx = vals.index('Airport')\nvals = vals[:indx]\nvals = vals[::-1]\ncapped_vals = ['Airport']\nfor val in vals:\n  if val[0].isupper():\n    capped_vals.append(val)\n  else:\n    break;\ncapped_vals = capped_vals[::-1]\nreturn ' '.join(capped_vals)",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10,
+    "description": "Text transform on cells in column Airport using expression jython:vals = value.split(' ')\nvals = [val.replace(\",\", \"\").replace(';', '').replace('\\'s', \"\").replace('-','') for val in vals]\nindx = vals.index('Airport')\nvals = vals[:indx]\nvals = vals[::-1]\ncapped_vals = ['Airport']\nfor val in vals:\n  if val[0].isupper():\n    capped_vals.append(val)\n  else:\n    break;\ncapped_vals = capped_vals[::-1]\nreturn ' '.join(capped_vals)"
   }
 ]
