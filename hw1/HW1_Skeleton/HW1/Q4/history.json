@@ -1,0 +1,44 @@
+[
+  {
+    "op": "core/column-addition",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "list",
+          "name": "Common Name",
+          "expression": "isBlank(value)",
+          "columnName": "Common Name",
+          "invert": false,
+          "omitBlank": false,
+          "omitError": false,
+          "selection": [
+            {
+              "v": {
+                "v": false,
+                "l": "false"
+              }
+            }
+          ],
+          "selectBlank": false,
+          "selectError": false
+        },
+        {
+          "type": "text",
+          "name": "Subject",
+          "columnName": "Subject",
+          "query": "Airport",
+          "mode": "text",
+          "caseSensitive": true,
+          "invert": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "baseColumnName": "Subject",
+    "expression": "jython:vals = value.split(' ')\nvals = [val.replace(\",\", \"\") for val in vals]\nindx = vals.index('Airport')\nvals = vals[:indx + 1]\nvals = vals[::-1]\nvals = [val for val in vals if val[0].isupper()]\nvals = vals[::-1]\nreturn ' '.join(vals)",
+    "onError": "set-to-blank",
+    "newColumnName": "Airport",
+    "columnInsertIndex": 5,
+    "description": "Create column Airport at index 5 based on column Subject using expression jython:vals = value.split(' ')\nvals = [val.replace(\",\", \"\") for val in vals]\nindx = vals.index('Airport')\nvals = vals[:indx + 1]\nvals = vals[::-1]\nvals = [val for val in vals if val[0].isupper()]\nvals = vals[::-1]\nreturn ' '.join(vals)"
+  }
+]
