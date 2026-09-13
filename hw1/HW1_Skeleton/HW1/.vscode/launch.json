@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Q5 Flask App",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/Q5/run.py",
+            "cwd": "${workspaceFolder}/Q5",
+            "console": "integratedTerminal",
+            "subProcess": true,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "Running on (https?://\\S+)",
+                "uriFormat": "%s"
+            }
+        }
+    ]
+}
