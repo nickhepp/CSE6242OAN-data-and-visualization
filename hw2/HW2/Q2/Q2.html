@@ -155,16 +155,19 @@ d3.dsv(",", "board_games.csv", function(d) {
         /*
         weights are in vals [2, 3, 4, 5, 7, 10]
         */
-        //clrStyle = '';
-        //if (0 <= d.weight && d.weight < 4) 
+        clrStyle = '';
+        if (0 <= d.weight && d.weight < 4) 
         {
-          clrStyle
+          clrStyle = 'smalldegree';
+        } else if (d.weight < 8) 
+        {
+          clrStyle = 'mediumdegree';
+        } else
+        {
+          clrStyle = 'largedegree';
         }
-
-        return "link " + (d.weight === 0 ? "zero" : "one");
+        return clrStyle;
       }); 
-
-
 
   // show the node label at top-right and bold
   node.append("text")
