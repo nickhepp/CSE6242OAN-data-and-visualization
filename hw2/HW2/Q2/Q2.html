@@ -33,6 +33,11 @@ circle.largedegree {
     fill: #1c9099
 }
 
+circle.pinned {
+    fill: #fff
+}
+
+
 circle {
   fill: #ccc;
   stroke: #fff;
@@ -138,8 +143,8 @@ d3.dsv(",", "board_games.csv", function(d) {
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
-          .on("end", dragended));
-
+          .on("end", dragended))
+        .on("dblclick", dblclick);
   
 
   // add the nodes and be sure to not have duplicate of this section
@@ -211,7 +216,28 @@ d3.dsv(",", "board_games.csv", function(d) {
       d.fixed = true;
       d.x = d.fx;
       d.y = d.fy;
+      //node = d3.select(this);
+      //d3.select(this).classed("pinned", false);
+      //node.classed("smalldegree", false);
+      //node.classed("mediumdegree", false);
+      //node.classed("largedegree", false);
+
+      //force.alpha(0.3).restart();      
   };
+
+  function dblclick(d)
+  {
+    if (d.fixed)
+    {
+      d.fixed = false;
+      d.fx = null;
+      d.fy = null;
+      d3.select(this).classed("pinned", false);
+      force.alpha(0.3).restart();
+    }
+
+  }
+
   
 }).catch(function(error) {
   console.log(error);
