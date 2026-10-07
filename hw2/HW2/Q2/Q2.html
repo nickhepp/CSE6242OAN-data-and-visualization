@@ -208,14 +208,9 @@ d3.dsv(",", "board_games.csv", function(d) {
 
   function dragended(d) {
       if (!d3.event.active) force.alphaTarget(0);
-      if (d.fixed == true) {
-          d.fx = d.x;
-          d.fy = d.y;
-      }
-      else {
-          d.fx = null;
-          d.fy = null;
-      }
+      d.fixed = true;
+      d.x = d.fx;
+      d.y = d.fy;
   };
   
 }).catch(function(error) {
