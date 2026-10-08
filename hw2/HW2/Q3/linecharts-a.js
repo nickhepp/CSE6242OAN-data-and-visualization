@@ -6,14 +6,14 @@ const vlSpec_a = {
   "transform": [
     {
       "fold": [
-        "Catan=rank",
-        "Dominion=rank",
-        "Codenames=rank",
-        "Terraforming Mars=rank",
-        "Gloomhaven=rank",
-        "Magic: The Gathering=rank",
-        "Dixit=rank",
-        "Monopoly=rank"
+        "Catan=count",
+        "Dominion=count",
+        "Codenames=count",
+        "Terraforming Mars=count",
+        "Gloomhaven=count",
+        "Magic: The Gathering=count",
+        "Dixit=count",
+        "Monopoly=count"
       ],
       "as": ["Game", "valueNum"]
     },
