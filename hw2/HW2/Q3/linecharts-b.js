@@ -23,7 +23,7 @@ const vlSpec_b = {
             "Magic: The Gathering=count",
             "Monopoly=count"
           ],
-          "as": ["Game", "count"]
+          "as": ["Game", "valueNum"]
         },
         {
           "calculate": "split(datum.Game, '=')[0]",
@@ -40,7 +40,7 @@ const vlSpec_b = {
           }
         },
         "y": {
-          "field": "count",
+          "field": "valueNum",
           "type": "quantitative",
           "title": "Num of Ratings"
         },
@@ -77,7 +77,7 @@ const vlSpec_b = {
             "Magic: The Gathering=count",
             "Monopoly=count"            
           ],
-          "as": ["Game", "count"]
+          "as": ["Game", "valueNum"]
         },
         {
           "calculate": "split(datum.Game, '=')[0]",
@@ -101,7 +101,7 @@ const vlSpec_b = {
           "type": "temporal"
         },
         "y": {
-          "field": "count",
+          "field": "valueNum",
           "type": "quantitative"
         },
         "color": {
@@ -131,7 +131,7 @@ const vlSpec_b = {
             "Terraforming Mars=count",
             "Gloomhaven=count",
           ],
-          "as": ["Game", "count"]
+          "as": ["Game", "valueNum"]
         },
         {
           "calculate": "split(datum.Game, '=')[0]",
@@ -147,7 +147,7 @@ const vlSpec_b = {
           "type": "temporal"
         },
         "y": {
-          "field": "count",
+          "field": "valueNum",
           "type": "quantitative"
         },
         "color": {
@@ -210,17 +210,10 @@ const vlSpec_b = {
           "value": "dataValue",
           "groupby": ["date", "GameName"]
         },
-        // {
-        //   "calculate": "toNumber(datum.count)",
-        //   "as": "count"
-        // },
-        // {
-        //   "calculate": "toNumber(datum.rank)",
-        //   "as": "rank"
-        // },
-        // {
-        //   "filter": "isValid(datum.date) && isValid(datum.count) && isValid(datum.rank)"
-        // },             
+        {
+          "calculate": "toNumber(datum.count)",
+          "as": "valueNum"
+        },
         {
           "filter": "month(datum.date) % 3 === 0"
         }
@@ -231,28 +224,12 @@ const vlSpec_b = {
           "type": "temporal"
         },
         "y": {
-          "field": "count",
+          "field": "valueNum",
           "type": "quantitative"
         },
         "text": {"field": "rank", "type": "quantitative"},
       }      
     },
-  
-    // {
-    //   "name": "legend_symbols",
-    //   "comment": "Legend circle",
-    // },
-
-
-    // {
-    //   "name": "legend_labels",
-    //   "comment": "'rank' inside legend circle",
-    // },
-
-    // {
-    //   "name": "legend_title",
-    //   "comment": "Legend description",
-    // },
 
   ],
 
