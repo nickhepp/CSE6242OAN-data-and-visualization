@@ -3,33 +3,32 @@
 
 
 // define the dimensions and margins for the bar chart
-var margin = {top: 50, right: 30, bottom: 30, left: 70};
+var margin = { top: 50, right: 30, bottom: 30, left: 70 };
 const width = 1000;
 const height = 1000;
 
 // append svg element to the body of the page
 // set dimensions and position of the svg element
 let svg = d3
-  .select("body")
-  .append("svg")
-  .attr("id", "line_chart")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom);
+    .select("body")
+    .append("svg")
+    .attr("id", "line_chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
 
 let gContainer = svg.append("g")
-  .attr("id", "container")
-  .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")");
+    .attr("id", "container")
+    .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
 
-
-let gLines = gContainer.append("g")
-  .attr("id", "lines")
 
 /*
  +-- <g id="lines"> element containing all line elements
  | |
  | +-- <path> elements for plotted lines
 */
+let gLines = gContainer.append("g")
+    .attr("id", "lines")
 
 /*
  +-- <g id="x-axis-lines"> element for x-axis
@@ -37,9 +36,9 @@ let gLines = gContainer.append("g")
  +-- <g id="y-axis-lines"> element for y-axis
 */
 let gXAxisLines = gContainer.append("g")
-  .attr("id", "x-axis-lines")
+    .attr("id", "x-axis-lines")
 let gYAxisLines = gContainer.append("g")
-  .attr("id", "y-axis-lines")
+    .attr("id", "y-axis-lines")
 
 /*
  +-- <g id="circles"> element for all circular elements
@@ -47,7 +46,7 @@ let gYAxisLines = gContainer.append("g")
  | +-- <circle> elements
 */
 let gCircles = gContainer.append("g")
-  .attr("id", "circles")
+    .attr("id", "circles")
 
 /*
  +-- <text id="line_chart_title"> element for line chart title
@@ -55,7 +54,7 @@ let gCircles = gContainer.append("g")
 txtLineChartTitle = gContainer
     .append("text")
     .attr("id", "line_chart_title")
-    .text("TODO");
+    .text("Board Games by Rating 2015-2019");
 
 /*
  +-- <text id="credit"> element for GT username
@@ -73,7 +72,7 @@ txtCredit = gContainer
  | +-- (<text> elements for legend)
 */
 let gLegend = gContainer.append("g")
-  .attr("id", "legend")
+    .attr("id", "legend")
 
 
 /*
@@ -96,28 +95,28 @@ yAxisLabel = gContainer
 <div id="bar_chart_title"> containing bar chart title
 */
 let divBarChartTitle = d3
-  .select("body")
-  .append("div")
-  .attr("id", "bar_chart_title")
-  .text("TODO");
+    .select("body")
+    .append("div")
+    .attr("id", "bar_chart_title")
+    .text("TODO");
 
 /*
 <svg id="bar_chart"> containing bar chart
 */
 let svgBarChart = d3
-  .select("body")
-  .append("svg")
-  .attr("id", "bar_chart")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom);
+    .select("body")
+    .append("svg")
+    .attr("id", "bar_chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
 
 /*
 +-- <g id="container_2">
 */
 let gContainer2 = svgBarChart.append("g")
-  .attr("id", "container_2")
-  .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")");
+    .attr("id", "container_2")
+    .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
 
 /*
  +-- <g id="bars"> element for bars
@@ -210,26 +209,125 @@ txtYBarAxisLabel = gContainer
 var pathToCsv = "average-rating.csv";		// path to csv
 
 d3.dsv(",", pathToCsv, function (d) {
+    const parsedRating = parseFloat(d.average_rating);
+    const parsedUsers = parseFloat(d.users_rated);
 
-  
-  return {
-    name: d.name,
-    year: d.year,
-    averageRating: Number.isFinite(d.average_rating) ? Math.floor(d.average_rating) : 0,
-    usersRated: Number.isFinite(d.users_rated) ? Math.floor(d.users_rated) : 0,
-  }
+    return {
+        name: d.name,
+        year: Number(d.year),
+        averageRating: Number.isFinite(parsedRating) ? Math.floor(parsedRating) : 0,
+        usersRated: Number.isFinite(parsedUsers) ? Math.floor(parsedUsers) : 0,
+    }
 }).then(function (data) {
-  console.log(data); // you should see the data in your browser's developer tools console
+    console.log(data); // you should see the data in your browser's developer tools console
 
-  /* Create bar plot using data from csv */
-  //  Display one plot line for each of the 5 years (2015–2019) in the dataset 
+    /* Create bar plot using data from csv */
+    //  Display one plot line for each of the 5 years (2015–2019) in the dataset 
 
-  const targetData = data.filter(datum => 2015 <= datum.year && datum.year <= 2019);
+    const startYear = 2015;
+    const endYear = 2019;
 
-  // If some of the datapoints in the chart do not have ratings, generate dummy values (0s) to be displayed on
-  // the chart for the required years (i.e If a year/rating combination has no games, use a count of 0).
+    const targetData = data.filter(datum => startYear <= datum.year && datum.year <= endYear);
+
+    const countsByRatingAndYear = getCountsByRatingAndYear(targetData);
+
+    const ratingCounts = Object.values(countsByRatingAndYear);
+    const minRating = d3.min(ratingCounts, datum => datum.averageRating);
+    const maxRating = d3.max(ratingCounts, datum => datum.averageRating);
+    const maxCount = d3.max(ratingCounts, datum => datum.count);
+
+    // build up the scales based on our mins and maxs
+    const xScale = d3.scaleLinear()
+        .domain([minRating, maxRating])
+        .range([0, width]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, maxCount])
+        .range([height, 0]);
+
+    const lineGenerator = d3.line()
+        .x(datum => xScale(datum.averageRating))
+        .y(datum => yScale(datum.count));
+
+    const years = d3.range(startYear, endYear + 1);
+    const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(years);
+
+    // each year will be a series
+    const yearSeries = years.map(year => ({
+        year: year,
+        values: ratingCounts
+            .filter(datum => datum.year === year)
+            .sort((first, second) => first.averageRating - second.averageRating)
+    }));
+
+    gLines.selectAll("path")
+        .data(yearSeries)
+        .enter()
+        .append("path")
+        .attr("fill", "none")
+        .attr("stroke", series => colorScale(series.year))
+        .attr("stroke-width", 2)
+        .attr("d", series => lineGenerator(series.values));
 
 
 }).catch(function (error) {
-  console.log(error);
+    console.log(error);
 });
+
+
+function getCompositeKey(year, rating) {
+    return `${year}_${rating}`;
+}
+
+
+function getCountsByRatingAndYear(data) {
+    let minYear = Number.MAX_SAFE_INTEGER;
+    let maxYear = Number.MIN_SAFE_INTEGER;
+    let minRating = Number.MAX_SAFE_INTEGER;
+    let maxRating = Number.MIN_SAFE_INTEGER;
+
+    // group by year and rating
+    const countsByRatingAndYear = data.reduce((acc, datum) => {
+
+        // compound key using grouping fields
+        const key = getCompositeKey(datum.year, datum.averageRating);
+
+        if (!acc[key]) {
+            acc[key] = {
+                year: datum.year,
+                averageRating: datum.averageRating,
+                count: 1
+            };
+        } else {
+            acc[key].count += 1;
+        }
+
+        minYear = Math.min(minYear, datum.year);
+        maxYear = Math.max(maxYear, datum.year);
+        minRating = Math.min(minRating, datum.averageRating);
+        maxRating = Math.max(maxRating, datum.averageRating);
+
+        return acc;
+    }, {});
+
+
+    // If some of the datapoints in the chart do not have ratings, generate dummy values (0s) to be displayed on
+    // the chart for the required years (i.e If a year/rating combination has no games, use a count of 0).
+
+    for (let tYear = minYear; tYear <= maxYear; tYear++)
+    {
+        for (let tRating = minRating; tRating <= maxRating; tRating++)
+        {
+            const nextKey = getCompositeKey(tYear, tRating)
+            if (!countsByRatingAndYear[nextKey]) {
+                countsByRatingAndYear[nextKey] = {
+                    year: tYear,
+                    averageRating: tRating,
+                    count: 0
+                };
+            };
+        }
+    }
+
+    return countsByRatingAndYear;
+}
