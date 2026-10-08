@@ -47,7 +47,6 @@ const vlSpec_b = {
         "color": {
           "field": "GameName",
           "type": "nominal",
-          //"title": "Game",
           "legend": null,
           "scale": {
             "scheme": "category10"

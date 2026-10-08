@@ -1,12 +1,14 @@
-const vlSpec_c1 = {
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "data": { "url": "boardgame_ratings.csv" },
-  "mark": "line",
-  "encoding": {
-    "x": { "field": "date", "type": "temporal" },
-    "y": { "field": "Catan=rank", "type": "quantitative" }
-  }
-};
+const vlSpec_c1 = JSON.parse(JSON.stringify(vlSpec_b));
+vlSpec_c1.title = "Number of Ratings 2016–2020 (Square root Scale)";
+
+if (Array.isArray(vlSpec_c1.layer)) {
+  vlSpec_c1.layer.forEach(layer => {
+    if (layer.encoding?.y) {
+      // If scale doesn't exist, initialize it as an empty object, then set type
+      (layer.encoding.y.scale ??= {}).type = "sqrt";
+    }
+  });
+}
 
 vegaEmbed('#svg-c1', vlSpec_c1, { renderer: 'svg' }).catch(console.error);
 
