@@ -49,11 +49,61 @@ const vlSpec_b = {
         }
       }
     },
-    // {
-    //   "name": "labels",
-    //   "comment": "End-of-line game names",
-
-    // },
+    {
+      "name": "labels",
+      "comment": "End-of-line game names",
+      "mark": {
+        "type": "text",
+        "fontSize": 10,
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+      },
+      "transform": [
+        {
+          "fold": [
+            "Catan=count",
+            "Codenames=count",
+            "Terraforming Mars=count",
+            "Gloomhaven=count",
+          ],
+          "as": ["Game", "count"]
+        },
+        {
+          "calculate": "split(datum.Game, '=')[0]",
+          "as": "GameName"
+        },     
+        {
+          // we are going to add row numbers but doing so in reverse order
+          "window": [{"op": "row_number", "as": "row_num"}],
+          "sort": [{"field": "date", "order": "descending"}]
+        },
+        {
+          // and we just want the last set, which is lowest values by row_num
+          "filter": "datum.row_num <= 4"
+          //"filter": "timeFormat(datum.date, '%Y-%m-%d') == '2020-08-01'"
+        }           
+      ],
+      "encoding": {
+        "text": {"field": "GameName"},        
+        "x": {
+          "field": "date",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "count",
+          "type": "quantitative"
+        },
+        "color": {
+          "field": "GameName",
+          "type": "nominal",
+          "title": "Game",
+          "scale": {
+            "scheme": "category10"
+          }
+        }
+      }         
+    },
 
     {
       "name": "symbols",
@@ -75,7 +125,7 @@ const vlSpec_b = {
         },
         {
           "calculate": "split(datum.Game, '=')[0]",
-          "as": "GameName"
+          "as": "gameName"
         },        
         {
           "filter": "month(datum.date) % 3 === 0"
@@ -91,7 +141,7 @@ const vlSpec_b = {
           "type": "quantitative"
         },
         "color": {
-          "field": "GameName",
+          "field": "gameName",
           "type": "nominal",
           "title": "Game",
           "scale": {
