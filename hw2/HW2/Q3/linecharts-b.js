@@ -134,14 +134,13 @@ const vlSpec_b = {
   // Create a line chart (Figure 5) for this part (append to the same HTML page)
   // whose design is a variant of what you have created in part 1. Start with your chart from part 1. Modify the Vega-Lite
   // specification to 
-  // change over time by . Show the circle marker
-  // for every three months and exactly align with the x-axis ticks in part 1. Add a legend to explain what this circle marker
+  // change over time by . 
   // represents next to your chart (see Figure 5, bottom right).
   // - adding a circle marker with the ranking text on their corresponding lines
   // Done:
   // - visualize how the rankings of [‘Catan’, ‘Codenames’, ‘Terraforming Mars’, ‘Gloomhaven’]
   // - Chart title: Number of Ratings 2016–2020 with Rankings
-
+  // - Show the circle marker for every three months and exactly align with the x-axis ticks in part 1. Add a legend to explain what this circle marker
 };
 
 
