@@ -54,7 +54,7 @@ let gCircles = gContainer.append("g")
 txtLineChartTitle = gContainer
     .append("text")
     .attr("id", "line_chart_title")
-    .text("Board Games by Rating 2015-2019");
+    .text("Board games by Rating 2015-2019");
 
 /*
  +-- <text id="credit"> element for GT username
@@ -240,10 +240,15 @@ d3.dsv(",", pathToCsv, function (d) {
     const xScale = d3.scaleLinear()
         .domain([minRating, maxRating])
         .range([0, width]);
+    var xAxis = d3.axisBottom().scale(xScale);
+    gXAxisLines.call(xAxis);
 
     const yScale = d3.scaleLinear()
         .domain([0, maxCount])
         .range([height, 0]);
+    var yAxis = d3.axisLeft().scale(yScale);
+    gYAxisLines.call(yAxis);
+
 
     const lineGenerator = d3.line()
         .x(datum => xScale(datum.averageRating))
@@ -316,7 +321,7 @@ function getCountsByRatingAndYear(data) {
 
     for (let tYear = minYear; tYear <= maxYear; tYear++)
     {
-        for (let tRating = minRating; tRating <= maxRating; tRating++)
+        for (let tRating = 0; tRating <= maxRating; tRating++)
         {
             const nextKey = getCompositeKey(tYear, tRating)
             if (!countsByRatingAndYear[nextKey]) {
