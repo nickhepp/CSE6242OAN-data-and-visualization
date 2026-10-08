@@ -274,6 +274,24 @@ d3.dsv(",", pathToCsv, function (d) {
         .attr("stroke-width", 2)
         .attr("d", series => lineGenerator(series.values));
 
+    // Display a filled circle for each rating-count data point.
+    // To do that we need to explode the points back out to a full set (not series by year)
+    const allPoints = yearSeries.flatMap(series => 
+        series.values.map(d => ({ ...d, year: series.year }))
+    );
+
+    // 3. Draw all dots at once in a single flat selection
+    gLines.selectAll("circle")
+        .data(allPoints)
+        .enter()
+        .append("circle")
+        .attr("cx", d => xScale(d.averageRating))
+        .attr("cy", d => yScale(d.count))
+        .attr("r", 4)
+        .attr("fill", d => colorScale(d.year));
+
+    // Display a legend on the right-hand portion of the chart to show how line colors map to years.
+
 
 }).catch(function (error) {
     console.log(error);
