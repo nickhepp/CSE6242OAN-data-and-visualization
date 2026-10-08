@@ -291,6 +291,57 @@ d3.dsv(",", pathToCsv, function (d) {
         .attr("fill", d => colorScale(d.year));
 
     // Display a legend on the right-hand portion of the chart to show how line colors map to years.
+    // /*
+    //  +-- <g id="legend"> element for legend
+    //  | |
+    //  | +-- (<circle> elements for legend)
+    //  | |
+    //  | +-- (<text> elements for legend)
+    // */
+    // let gLegend = gContainer.append("g")
+    //     .attr("id", "legend")
+
+    // Clean below
+
+
+ // Extract unique years for the legend rows
+    const uniqueYears = yearSeries.map(series => series.year);
+
+    // Configurable coordinates for positioning the legend on the right
+    // Adjust these offsets depending on your chart width and margins
+    const legendX = width - margin.right + 10; 
+    const legendY = margin.top;
+    const rowHeight = 20; // Vertical spacing between items
+
+    // Create a container group for the legend
+    const legend = gLines.append("g")
+        .attr("class", "chart-legend")
+        .attr("transform", `translate(${legendX}, ${legendY})`);
+
+    // Bind the years and create a container for each row
+    const legendRows = legend.selectAll(".legend-row")
+        .data(uniqueYears)
+        .enter()
+        .append("g")
+        .attr("class", "legend-row")
+        .attr("transform", (d, i) => `translate(0, ${i * rowHeight})`);
+
+    // Draw the color marker (a small matching circle or rect)
+    legendRows.append("circle")
+        .attr("cx", 5)
+        .attr("cy", 0)
+        .attr("r", 5)
+        .attr("fill", year => colorScale(year));
+
+    // Draw the text label next to the marker
+    legendRows.append("text")
+        .attr("x", 20)
+        .attr("y", 4) // Slight vertical offset to align with the circle center
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "12px")
+        .attr("alignment-baseline", "middle")
+        .text(year => year);
+
 
 
 }).catch(function (error) {
