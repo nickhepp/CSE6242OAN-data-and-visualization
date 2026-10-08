@@ -6,16 +6,16 @@ const vlSpec_a = {
   "transform": [
     {
       "fold": [
-        "Catan=count",
-        "Dominion=count",
-        "Codenames=count",
-        "Terraforming Mars=count",
-        "Gloomhaven=count",
-        "Magic: The Gathering=count",
-        "Dixit=count",
-        "Monopoly=count"
+        "Catan=rank",
+        "Dominion=rank",
+        "Codenames=rank",
+        "Terraforming Mars=rank",
+        "Gloomhaven=rank",
+        "Magic: The Gathering=rank",
+        "Dixit=rank",
+        "Monopoly=rank"
       ],
-      "as": ["Game", "Count"]
+      "as": ["Game", "valueNum"]
     },
     {
       "calculate": "split(datum.Game, '=')[0]",
@@ -32,9 +32,9 @@ const vlSpec_a = {
       }      
     },
     "y": {
-      "field": "Count",
+      "field": "valueNum",
       "type": "quantitative",
-      "title": "Player Count"
+      "title": "Num of Ratings"
     },
     "color": {
       "field": "GameName",

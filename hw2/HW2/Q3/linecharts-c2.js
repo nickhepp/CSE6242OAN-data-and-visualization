@@ -1,5 +1,11 @@
 const vlSpec_c2 = {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "data": { "url": "boardgame_ratings.csv" },
+  "mark": "line",
+  "encoding": {
+    "x": { "field": "date", "type": "temporal" },
+    "y": { "field": "Catan=rank", "type": "quantitative" }
+  }
 };
 
 vegaEmbed('#svg-c2', vlSpec_c2, { renderer: 'svg' }).catch(console.error);
