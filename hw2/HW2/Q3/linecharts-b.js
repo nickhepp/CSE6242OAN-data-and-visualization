@@ -17,6 +17,11 @@ const vlSpec_b = {
             "Codenames=count",
             "Terraforming Mars=count",
             "Gloomhaven=count",
+            //
+            "Dixit=count",
+            "Dominion=count",
+            "Magic: The Gathering=count",
+            "Monopoly=count"
           ],
           "as": ["Game", "count"]
         },
@@ -42,7 +47,8 @@ const vlSpec_b = {
         "color": {
           "field": "GameName",
           "type": "nominal",
-          "title": "Game",
+          //"title": "Game",
+          "legend": null,
           "scale": {
             "scheme": "category10"
           }
@@ -66,6 +72,11 @@ const vlSpec_b = {
             "Codenames=count",
             "Terraforming Mars=count",
             "Gloomhaven=count",
+            //
+            "Dixit=count",
+            "Dominion=count",
+            "Magic: The Gathering=count",
+            "Monopoly=count"            
           ],
           "as": ["Game", "count"]
         },
@@ -80,7 +91,7 @@ const vlSpec_b = {
         },
         {
           // and we just want the last set, which is lowest values by row_num
-          "filter": "datum.row_num <= 4"
+          "filter": "datum.row_num <= 8"
           //"filter": "timeFormat(datum.date, '%Y-%m-%d') == '2020-08-01'"
         }           
       ],
