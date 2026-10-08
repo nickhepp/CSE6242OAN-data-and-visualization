@@ -60,8 +60,7 @@ const vlSpec_b = {
       "comment": "Ranking circles",
       "mark": {
         "type": "circle",
-        "size": 80,
-        "color": "#E74C3C",
+        "size": 200,
         "tooltip": true
       },      
       "transform": [
@@ -89,8 +88,7 @@ const vlSpec_b = {
         },
         "y": {
           "field": "count",
-          "type": "quantitative",
-          "title": "Num of Ratings"
+          "type": "quantitative"
         },
         "color": {
           "field": "GameName",
@@ -104,11 +102,82 @@ const vlSpec_b = {
      
     },
 
-    // {
-    //   "name": "rank_labels",
-    //   "comment": "Rankings inside circles",
-    // },
-
+    {
+      "name": "rank_labels",
+      "comment": "Rankings inside circles",
+      "mark": {
+        "type": "text",
+        "fontSize": 10,
+        "align": "center",
+        "baseline": "middle",
+        "color": "white"
+      },
+      "transform": [
+        {
+          "fold": [
+            // we need both count and rank
+            // count drives the y height
+            // rank drives the text
+            "Catan=count",
+            "Catan=rank",
+            
+            "Codenames=count",
+            "Codenames=rank",
+            
+            "Terraforming Mars=count",
+            "Terraforming Mars=rank",
+            
+            "Gloomhaven=count",
+            "Gloomhaven=rank",
+          ],
+          // we treat both pairs of data as a generic game metric
+          "as": ["GameMetric", "dataValue"]
+        },
+        {
+          // adds a GameName field to each row
+          // split off the name of the game
+          "calculate": "split(datum.GameMetric, '=')[0]",
+          "as": "GameName"
+        },
+        {
+          // capture the metric
+          "calculate": "split(datum.GameMetric, '=')[1]",
+          "as": "Metric"
+        }, 
+        {
+          // recombine the paired data pts so count and rank are one row
+          "pivot": "Metric",
+          "value": "dataValue",
+          "groupby": ["date", "GameName"]
+        },
+        // {
+        //   "calculate": "toNumber(datum.count)",
+        //   "as": "count"
+        // },
+        // {
+        //   "calculate": "toNumber(datum.rank)",
+        //   "as": "rank"
+        // },
+        // {
+        //   "filter": "isValid(datum.date) && isValid(datum.count) && isValid(datum.rank)"
+        // },             
+        {
+          "filter": "month(datum.date) % 3 === 0"
+        }
+      ],
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal"
+        },
+        "y": {
+          "field": "count",
+          "type": "quantitative"
+        },
+        "text": {"field": "rank", "type": "quantitative"},
+      }      
+    },
+  
     // {
     //   "name": "legend_symbols",
     //   "comment": "Legend circle",
@@ -130,11 +199,6 @@ const vlSpec_b = {
 
 
 
-  // your spec goes here
-  // Create a line chart (Figure 5) for this part (append to the same HTML page)
-  // whose design is a variant of what you have created in part 1. Start with your chart from part 1. Modify the Vega-Lite
-  // specification to 
-  // change over time by . 
   // represents next to your chart (see Figure 5, bottom right).
   // - adding a circle marker with the ranking text on their corresponding lines
   // Done:
