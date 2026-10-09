@@ -302,7 +302,6 @@ d3.dsv(",", pathToCsv, function (d) {
         .attr("fill", d => colorScale(d.year))
         .on("mouseover", function(dataPt, i) {
             d3.select(this)
-                .transition()
                 .attr("r", selectedCircleRadius);
 
             // select the data
@@ -375,7 +374,6 @@ d3.dsv(",", pathToCsv, function (d) {
         })
         .on("mouseout", function(dataPt) {
             d3.select(this)
-                .transition()
                 .attr("r", nonSelectedCircleRadius);
             gBars.selectAll(".dynamic-hover-bars").remove();
             svgBarChart.style("display", "none");
