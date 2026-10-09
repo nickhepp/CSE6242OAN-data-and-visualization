@@ -310,8 +310,12 @@ d3.dsv(",", pathToCsv, function (d) {
 
             // No bar chart should be displayed when the count of games is 0 for hovered year and rating.                
             if (dataByYearRating.length == 0)
+            {
+                svgBarChart.style("display", "none");
                 return;
-
+            } else {
+                svgBarChart.style("display", null);
+            }
 
             const rectSpacing = 10;
             const rectHeight = height / 5;
