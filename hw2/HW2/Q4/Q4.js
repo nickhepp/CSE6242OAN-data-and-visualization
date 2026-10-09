@@ -150,15 +150,15 @@ let gYAxisBars = gContainer2.append("g")
  |
  +-- <text id="bar_y_axis_label"> element for y axis label
 */
+// Set horizontal axis label to Number of users and vertical axis label to Games.
 txtXBarAxisLabel = gContainer
     .append("text")
     .attr("id", "bar_x_axis_label")
-    .text("TODO");
-
+    .text("Number of users");
 txtYBarAxisLabel = gContainer
     .append("text")
     .attr("id", "bar_y_axis_label")
-    .text("TODO");
+    .text("Games");
 
 
 /*
