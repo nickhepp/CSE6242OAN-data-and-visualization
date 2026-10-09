@@ -124,7 +124,8 @@ let svgBarChart = d3
 let gContainer2 = svgBarChart.append("g")
     .attr("id", "container_2")
     .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+        "translate(" + margin.left + "," + margin.top + ")") 
+        .attr("fill", "#808080");      
 
 /*
  +-- <g id="bars"> element for bars
@@ -296,7 +297,69 @@ d3.dsv(",", pathToCsv, function (d) {
         .attr("cx", d => xScale(d.averageRating))
         .attr("cy", d => yScale(d.count))
         .attr("r", 4)
-        .attr("fill", d => colorScale(d.year));
+        .attr("fill", d => colorScale(d.year))
+        .on("mouseover", function(dataPt, i) {
+            dataPt = dataPt;
+
+            // select the data
+            console.log(data.length);
+            const dataByYearRating = data
+                .filter(datum => datum.year === dataPt.year && datum.averageRating === dataPt.averageRating)    // filter
+                .sort((a,b) => b.usersRated - a.usersRated)                                                     // sort to most rated
+                .slice(0, 5);                                                                                   // limit to top 5
+
+            const rectSpacing = 10;
+            const rectHeight = height / 5;
+
+            gBars.selectAll("rect")
+                .data(dataByYearRating)
+                .enter()
+                .append("rect")
+                //.attr("x", (d, i) => i * 60)          // Spacing rectangles out horizontally
+                .attr("x", 0)          // Spacing rectangles out horizontally
+                .attr("y", (d, i) => i * rectHeight)            // Flipping the Y-axis so bars grow upwards
+                .attr("width", 50)                    // Fixed width for every bar
+                .attr("height", rectHeight - rectSpacing)             // Height determined by the data value
+                .attr("fill", "#69b3a2")                         // Styling fill color
+                .attr("class", "dynamic-hover-bars");
+
+                /*
+
+                Q3
+
+                [8 points] Create a horizontal bar chart. So that when hovering over a circle, that bar chart will be shown below the line chart. 
+                The bar chart displays the top 5 board games that received the highest numbers of user ratings
+                (users_rated), for the hovered year and rating. For example, hovering over the rating-6 circle for 2019 will display the
+                bar chart for the number of users who rated the top 5 board games. If a certain year/rating combination has fewer than
+                5 entries, it should display as many as there are. Figure 9 shows an example design. Show one bar per game. The bar
+                length represents the number of users who rated the game.
+                Note: No bar chart should be displayed when the count of games is 0 for hovered year and rating.
+                Axes: All axes should be automatically adjusted based on the data. Do not hard-code any values.
+                • The vertical axis represents the board games. Sort the games by users_rated in descending order, such that
+                the game with the highest users_rated is at the top, and the game with the smallest users_rated is at the
+                bottom. Some boardgame names are quite long. For each game name, display its first 10 characters (if a name
+                has fewer than 10 characters, display them all). A space counts as a character.
+                • The horizontal axis represents the number of users who rated the game (for the hovered year and rating). Use a
+                linear scale.
+                • Set horizontal axis label to Number of users and vertical axis label to Games.
+                */
+
+            // // 'event' is the native DOM event (useful for mouse positions)
+            // // 'd' is the current data object (e.g., d.averageRating, d.count)
+            
+            // // Example action: Make the hovered circle bigger and change color
+            // d3.select(this)
+            //     .attr("r", 8)
+            //     .attr("fill", "orange");
+        })
+        .on("mouseout", function(dataPt) {
+            console.log(dataPt);
+            gBars.selectAll(".dynamic-hover-bars").remove();
+            // // Example action: Reset the circle back to its original state
+            // d3.select(this)
+            //     .attr("r", 4)
+            //     .attr("fill", d => colorScale(d.year));
+        });
 
     // Display a legend on the right-hand portion of the chart to show how line colors map to years.
     // /*
@@ -309,22 +372,15 @@ d3.dsv(",", pathToCsv, function (d) {
     // let gLegend = gContainer.append("g")
     //     .attr("id", "legend")
 
-    // Clean below
 
-
- // Extract unique years for the legend rows
+    // extract unique years for the legend rows
     const uniqueYears = yearSeries.map(series => series.year);
 
-    // Configurable coordinates for positioning the legend on the right
-    // Adjust these offsets depending on your chart width and margins
-    const legendX = width - margin.right + 10; 
+    // Display a legend on the right-hand portion of the chart to show how line colors map to years.
+    const legendX = width - margin.right + 10; // legend on the right
     const legendY = margin.top;
-    const rowHeight = 20; // Vertical spacing between items
-
-    // Create a container group for the legend
-    //const legend = gLines.append("g")
-        gLegend.attr("class", "chart-legend")
-        .attr("transform", `translate(${legendX}, ${legendY})`);
+    const rowHeight = 20; // vertical spacing between items
+    gLegend.attr("transform", `translate(${legendX}, ${legendY})`);
 
     // Bind the years and create a container for each row
     const legendRows = gLegend.selectAll(".legend-row")
@@ -334,21 +390,27 @@ d3.dsv(",", pathToCsv, function (d) {
         .attr("class", "legend-row")
         .attr("transform", (d, i) => `translate(0, ${i * rowHeight})`);
 
-    // Draw the color marker (a small matching circle or rect)
+    // Display a filled circle for each rating-count data point
     legendRows.append("circle")
         .attr("cx", 5)
         .attr("cy", 0)
         .attr("r", 5)
         .attr("fill", year => colorScale(year));
 
-    // Draw the text label next to the marker
+    // Paint the year
     legendRows.append("text")
         .attr("x", 20)
-        .attr("y", 4) // Slight vertical offset to align with the circle center
+        .attr("y", 4)
         .attr("font-family", "sans-serif")
         .attr("font-size", "12px")
         .attr("alignment-baseline", "middle")
         .text(year => year);
+
+
+
+
+
+
 
 
 
