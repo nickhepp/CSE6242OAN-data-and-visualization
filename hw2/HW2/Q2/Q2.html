@@ -119,7 +119,7 @@ d3.dsv(",", "board_games.csv", function(d) {
       .attr("height", height);
 
 
-  svg.append("text").attr("id", "credit").text("nheppermann3")
+  svg.append("text").attr("id", "credit").text("nheppermann3");
 
   // add the links
   var path = svg.append("g")
@@ -219,13 +219,7 @@ d3.dsv(",", "board_games.csv", function(d) {
       d.fixed = true;
       d.x = d.fx;
       d.y = d.fy;
-      //node = d3.select(this);
-      //d3.select(this).classed("pinned", false);
-      //node.classed("smalldegree", false);
-      //node.classed("mediumdegree", false);
-      //node.classed("largedegree", false);
-
-      //force.alpha(0.3).restart();      
+      d3.select(this).select("circle").classed("pinned", true);
   };
 
   function dblclick(d)
@@ -235,7 +229,7 @@ d3.dsv(",", "board_games.csv", function(d) {
       d.fixed = false;
       d.fx = null;
       d.fy = null;
-      d3.select(this).classed("pinned", false);
+      d3.select(this).select("circle").classed("pinned", false);
       force.alpha(0.3).restart();
     }
 
