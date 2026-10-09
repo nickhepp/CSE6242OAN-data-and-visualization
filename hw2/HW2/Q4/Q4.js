@@ -308,6 +308,11 @@ d3.dsv(",", pathToCsv, function (d) {
                 .sort((a,b) => b.usersRated - a.usersRated)                                                     // sort to most rated
                 .slice(0, 5);                                                                                   // limit to top 5
 
+            // No bar chart should be displayed when the count of games is 0 for hovered year and rating.                
+            if (dataByYearRating.length == 0)
+                return;
+
+
             const rectSpacing = 10;
             const rectHeight = height / 5;
 
@@ -328,8 +333,11 @@ d3.dsv(",", pathToCsv, function (d) {
                 .attr("fill", colorScale(dataPt.year))                         // Styling fill color
                 .attr("class", "dynamic-hover-bars");
 
-                //var xBarAxis = d3.axisBottom().scale(xScale);
-                //gXAxisLines.call(xAxis);
+                var xBarAxis = d3.axisBottom().scale(xBarScale);
+                gXAxisBars.call(xBarAxis);
+               
+    
+                //gYAxisBars
 
                 //const yScale = d3.scaleLinear()
                 //    .domain([0, maxCount])
@@ -349,7 +357,7 @@ d3.dsv(",", pathToCsv, function (d) {
                 bar chart for the number of users who rated the top 5 board games. If a certain year/rating combination has fewer than
                 5 entries, it should display as many as there are. Figure 9 shows an example design. Show one bar per game. The bar
                 length represents the number of users who rated the game.
-                Note: No bar chart should be displayed when the count of games is 0 for hovered year and rating.
+                
                 Axes: All axes should be automatically adjusted based on the data. Do not hard-code any values.
                 • The vertical axis represents the board games. Sort the games by users_rated in descending order, such that
                 the game with the highest users_rated is at the top, and the game with the smallest users_rated is at the
