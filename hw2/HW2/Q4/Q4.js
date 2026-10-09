@@ -326,42 +326,31 @@ d3.dsv(",", pathToCsv, function (d) {
                 .data(dataByYearRating)
                 .enter()
                 .append("rect")
-                .attr("x", margin.left)          
+                .attr("x", margin.left)
                 .attr("y", (d, i) => margin.top + i * rectHeight)
                 .attr("width", (d) => xBarScale(d.usersRated))
-                .attr("height", rectHeight - rectSpacing)             // Height determined by the data value
-                .attr("fill", colorScale(dataPt.year))                         // Styling fill color
+                .attr("height", rectHeight - rectSpacing)
+                .attr("fill", colorScale(dataPt.year))
                 .attr("class", "dynamic-hover-bars");
 
-                var xBarAxis = d3.axisBottom().scale(xBarScale);
-                gXAxisBars.call(xBarAxis);
-               
-    
-                //gYAxisBars
-
-                //const yScale = d3.scaleLinear()
-                //    .domain([0, maxCount])
-                //    .range([height, 0]);
-                //var yAxis = d3.axisLeft().scale(yScale);
-                //gYAxisLines.call(yAxis);
-
-
+            var xBarAxis = d3.axisBottom().scale(xBarScale);
+            gXAxisBars.call(xBarAxis);
+            
+            const gameNames = dataByYearRating.map(game => game.name);
+            const yBarScale = d3.scaleBand()
+                .domain(gameNames)
+                .range([0, height]);
+            var yBarAxis = d3.axisLeft().scale(yBarScale);
+            gYAxisBars.call(yBarAxis);
 
                 /*
 
                 Q3
 
-                [8 points] Create a horizontal bar chart. So that when hovering over a circle, that bar chart will be shown below the line chart. 
-                The bar chart displays the top 5 board games that received the highest numbers of user ratings
-                (users_rated), for the hovered year and rating. For example, hovering over the rating-6 circle for 2019 will display the
-                bar chart for the number of users who rated the top 5 board games. If a certain year/rating combination has fewer than
-                5 entries, it should display as many as there are. Figure 9 shows an example design. Show one bar per game. The bar
-                length represents the number of users who rated the game.
+
                 
                 Axes: All axes should be automatically adjusted based on the data. Do not hard-code any values.
-                • The vertical axis represents the board games. Sort the games by users_rated in descending order, such that
-                the game with the highest users_rated is at the top, and the game with the smallest users_rated is at the
-                bottom. Some boardgame names are quite long. For each game name, display its first 10 characters (if a name
+                • The vertical axis represents the board games.  Some boardgame names are quite long. For each game name, display its first 10 characters (if a name
                 has fewer than 10 characters, display them all). A space counts as a character.
                 • The horizontal axis represents the number of users who rated the game (for the hovered year and rating). Use a
                 linear scale.
