@@ -311,7 +311,6 @@ d3.dsv(",", pathToCsv, function (d) {
             // No bar chart should be displayed when the count of games is 0 for hovered year and rating.                
             if (dataByYearRating.length == 0)
             {
-                svgBarChart.style("display", "none");
                 return;
             } else {
                 svgBarChart.style("display", null);
@@ -340,7 +339,7 @@ d3.dsv(",", pathToCsv, function (d) {
             var xBarAxis = d3.axisBottom().scale(xBarScale);
             gXAxisBars.call(xBarAxis);
             
-            const gameNames = dataByYearRating.map(game => game.name);
+            const gameNames = dataByYearRating.map(game => truncateString(game.name, 10));
             const yBarScale = d3.scaleBand()
                 .domain(gameNames)
                 .range([0, height]);
@@ -372,6 +371,7 @@ d3.dsv(",", pathToCsv, function (d) {
         .on("mouseout", function(dataPt) {
             console.log(dataPt);
             gBars.selectAll(".dynamic-hover-bars").remove();
+            svgBarChart.style("display", "none");
             // // Example action: Reset the circle back to its original state
             // d3.select(this)
             //     .attr("r", 4)
@@ -434,6 +434,14 @@ d3.dsv(",", pathToCsv, function (d) {
 }).catch(function (error) {
     console.log(error);
 });
+
+
+function truncateString(str, maxLength) {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength);
+  }
+  return str;
+};
 
 
 function getCompositeKey(year, rating) {
