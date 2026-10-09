@@ -289,16 +289,21 @@ d3.dsv(",", pathToCsv, function (d) {
         series.values.map(d => ({ ...d, year: series.year }))
     );
 
+    const nonSelectedCircleRadius = 4;
+    const selectedCircleRadius = nonSelectedCircleRadius + nonSelectedCircleRadius;
+
     gCircles.selectAll("circle")
         .data(allPoints)
         .enter()
         .append("circle")
         .attr("cx", d => xScale(d.averageRating))
         .attr("cy", d => yScale(d.count))
-        .attr("r", 4)
+        .attr("r", nonSelectedCircleRadius)
         .attr("fill", d => colorScale(d.year))
         .on("mouseover", function(dataPt, i) {
-            dataPt = dataPt;
+            d3.select(this)
+                .transition()
+                .attr("r", selectedCircleRadius);
 
             // select the data
             console.log(data.length);
@@ -369,13 +374,11 @@ d3.dsv(",", pathToCsv, function (d) {
             //     .attr("fill", "orange");
         })
         .on("mouseout", function(dataPt) {
-            console.log(dataPt);
+            d3.select(this)
+                .transition()
+                .attr("r", nonSelectedCircleRadius);
             gBars.selectAll(".dynamic-hover-bars").remove();
             svgBarChart.style("display", "none");
-            // // Example action: Reset the circle back to its original state
-            // d3.select(this)
-            //     .attr("r", 4)
-            //     .attr("fill", d => colorScale(d.year));
         });
 
     // Display a legend on the right-hand portion of the chart to show how line colors map to years.
