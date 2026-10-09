@@ -350,27 +350,16 @@ d3.dsv(",", pathToCsv, function (d) {
             var yBarAxis = d3.axisLeft().scale(yBarScale);
             gYAxisBars.call(yBarAxis);
 
-                /*
+            /*
+            Q3
+            Axes: All axes should be automatically adjusted based on the data. Do not hard-code any values.
+            • The vertical axis represents the board games.  Some boardgame names are quite long. For each game name, display its first 10 characters (if a name
+            has fewer than 10 characters, display them all). A space counts as a character.
+            • The horizontal axis represents the number of users who rated the game (for the hovered year and rating). Use a
+            linear scale.
+            • Set horizontal axis label to Number of users and vertical axis label to Games.
+            */
 
-                Q3
-
-
-                
-                Axes: All axes should be automatically adjusted based on the data. Do not hard-code any values.
-                • The vertical axis represents the board games.  Some boardgame names are quite long. For each game name, display its first 10 characters (if a name
-                has fewer than 10 characters, display them all). A space counts as a character.
-                • The horizontal axis represents the number of users who rated the game (for the hovered year and rating). Use a
-                linear scale.
-                • Set horizontal axis label to Number of users and vertical axis label to Games.
-                */
-
-            // // 'event' is the native DOM event (useful for mouse positions)
-            // // 'd' is the current data object (e.g., d.averageRating, d.count)
-            
-            // // Example action: Make the hovered circle bigger and change color
-            // d3.select(this)
-            //     .attr("r", 8)
-            //     .attr("fill", "orange");
         })
         .on("mouseout", function(dataPt) {
             d3.select(this)
