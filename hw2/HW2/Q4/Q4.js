@@ -51,17 +51,25 @@ let gCircles = gContainer.append("g")
 /*
  +-- <text id="line_chart_title"> element for line chart title
 */
+// Display the title “Board games by Rating 2015-2019” at the top of the chart
 txtLineChartTitle = gContainer
     .append("text")
     .attr("id", "line_chart_title")
+    .attr("x", width/2)
+    .attr("y", -25)
+    .attr("text-anchor", "middle")  // Centers text horizontally
     .text("Board games by Rating 2015-2019");
 
 /*
  +-- <text id="credit"> element for GT username
 */
+// Add your GT username beneath the title
 txtCredit = gContainer
     .append("text")
     .attr("id", "credit")
+    .attr("x", width/2)
+    .attr("y", -5)
+    .attr("text-anchor", "middle")  // Centers text horizontally
     .text("nheppermann3");
 
 /*
@@ -251,8 +259,8 @@ d3.dsv(",", pathToCsv, function (d) {
 
 
     const lineGenerator = d3.line()
-        .x(datum => xScale(datum.averageRating))
-        .y(datum => yScale(datum.count));
+        .x(datum => xScale(datum.averageRating)) // x-axis is rating
+        .y(datum => yScale(datum.count));        // y-axis is count of ratings
 
     const years = d3.range(startYear, endYear + 1);
     const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(years);
@@ -265,6 +273,7 @@ d3.dsv(",", pathToCsv, function (d) {
             .sort((first, second) => first.averageRating - second.averageRating)
     }));
 
+    // Use a different color for each year’s line
     gLines.selectAll("path")
         .data(yearSeries)
         .enter()
@@ -280,7 +289,6 @@ d3.dsv(",", pathToCsv, function (d) {
         series.values.map(d => ({ ...d, year: series.year }))
     );
 
-    // 3. Draw all dots at once in a single flat selection
     gLines.selectAll("circle")
         .data(allPoints)
         .enter()
@@ -314,12 +322,12 @@ d3.dsv(",", pathToCsv, function (d) {
     const rowHeight = 20; // Vertical spacing between items
 
     // Create a container group for the legend
-    const legend = gLines.append("g")
-        .attr("class", "chart-legend")
+    //const legend = gLines.append("g")
+        gLegend.attr("class", "chart-legend")
         .attr("transform", `translate(${legendX}, ${legendY})`);
 
     // Bind the years and create a container for each row
-    const legendRows = legend.selectAll(".legend-row")
+    const legendRows = gLegend.selectAll(".legend-row")
         .data(uniqueYears)
         .enter()
         .append("g")
