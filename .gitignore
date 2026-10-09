@@ -6,3 +6,8 @@ hw2/HW2/Q4/.venv/*/**
 hw2/HW2/Q4/lib/.
 hw2/HW2/Q4/lib/*/**
 hw2/HW2/Q4/lib/*
+hw2/HW2/Q5/.venv/*/**
+hw2/HW2/Q5/.venv/.
+hw2/HW2/Q5/.venv/pyvenv.cfg
+hw2/HW2/Q5/lib/*
+hw2/HW2/Q5/topojson.v2.min.js
