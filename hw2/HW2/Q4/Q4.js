@@ -105,8 +105,7 @@ yAxisLabel = gContainer
 let divBarChartTitle = d3
     .select("body")
     .append("div")
-    .attr("id", "bar_chart_title")
-    .text("TODO");
+    .attr("id", "bar_chart_title");
 
 /*
 <svg id="bar_chart"> containing bar chart
@@ -314,6 +313,7 @@ d3.dsv(",", pathToCsv, function (d) {
                 return;
             } else {
                 svgBarChart.style("display", null);
+                divBarChartTitle.text(`Top 5 Most Rated Games of ${dataPt.year} with Rating ${dataPt.averageRating}`)
             }
 
             const rectSpacing = 10;
