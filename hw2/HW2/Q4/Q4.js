@@ -311,17 +311,33 @@ d3.dsv(",", pathToCsv, function (d) {
             const rectSpacing = 10;
             const rectHeight = height / 5;
 
+            // build up the scales based on our mins and maxs
+            const maxUsersRated = d3.max(dataByYearRating, datum => datum.usersRated);
+            const xBarScale = d3.scaleLinear()
+                .domain([0, maxUsersRated])
+                .range([0, width]);
+
             gBars.selectAll("rect")
                 .data(dataByYearRating)
                 .enter()
                 .append("rect")
-                //.attr("x", (d, i) => i * 60)          // Spacing rectangles out horizontally
-                .attr("x", 0)          // Spacing rectangles out horizontally
-                .attr("y", (d, i) => i * rectHeight)            // Flipping the Y-axis so bars grow upwards
-                .attr("width", 50)                    // Fixed width for every bar
+                .attr("x", margin.left)          
+                .attr("y", (d, i) => margin.top + i * rectHeight)
+                .attr("width", (d) => xBarScale(d.usersRated))
                 .attr("height", rectHeight - rectSpacing)             // Height determined by the data value
-                .attr("fill", "#69b3a2")                         // Styling fill color
+                .attr("fill", colorScale(dataPt.year))                         // Styling fill color
                 .attr("class", "dynamic-hover-bars");
+
+                //var xBarAxis = d3.axisBottom().scale(xScale);
+                //gXAxisLines.call(xAxis);
+
+                //const yScale = d3.scaleLinear()
+                //    .domain([0, maxCount])
+                //    .range([height, 0]);
+                //var yAxis = d3.axisLeft().scale(yScale);
+                //gYAxisLines.call(yAxis);
+
+
 
                 /*
 
