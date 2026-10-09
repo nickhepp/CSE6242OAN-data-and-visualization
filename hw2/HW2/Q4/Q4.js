@@ -289,7 +289,7 @@ d3.dsv(",", pathToCsv, function (d) {
         series.values.map(d => ({ ...d, year: series.year }))
     );
 
-    gLines.selectAll("circle")
+    gCircles.selectAll("circle")
         .data(allPoints)
         .enter()
         .append("circle")
