@@ -72,8 +72,33 @@ let divTooltip = d3
 Promise.all([
     // enter code to read files
     d3.json("data/world_countries.json"),
-    d3.csv("data/wildlife_trafficking.csv")
+    d3.csv("data/wildlife_trafficking.csv", d => {
+        return {
+            country: d["Country of Incident"], // Keep as string
+            year: +d.Year,                                // Convert to integer
+            num_incidents: +d.Number_of_Incidents,  // Convert to integer
+            avg_fine: Number.isFinite(+d.Average_Fine) ? +d.Average_Fine : 0,                // Convert to float
+            avg_imprisonment: Number.isFinite(+d.Average_Imprisonment) ? +d.Average_Imprisonment : 0 // Convert to float
+        };
+    })
 ]).then(([worldData, traffickingData]) => {
+
+
+/*
+• Each row in wildlife_trafficking.csv represents the number of wildlife trafficking incidents per country in a
+given year, in the form of <Year,Country,Number of Incidents,Average Fine,Average Imprisonment>,
+where
+– Year: the year in which the wildlife trafficking incidents occurred
+– Country: a country in the world, e.g., United States of America.
+– Number of Incidents: the number of wildlife trafficking incidents that occurred in Country in Year.
+– Average Fine: the average fine in USD for wildlife traffickers caught for incidents occurring in Country in Year.
+– Average Imprisonment: the average imprisonment term in years for wildlife traffickers caught for incidents
+occurring in Country in Year.
+*/
+
+
+
+
     // enter code to call ready() with required arguments
     ready(null, worldData, traffickingData);
 });
