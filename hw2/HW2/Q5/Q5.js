@@ -74,7 +74,10 @@ var path = d3.geoPath().projection(projection);
 
 Promise.all([
     // enter code to read files
-    d3.json("data/world_countries.json"),
+    d3.json("data/world_countries.json", d => {
+        d.dval = '1';
+        return d;
+    }),
     d3.csv("data/wildlife_trafficking.csv", d => {
         return {
             country: d["Country of Incident"], // Keep as string
@@ -134,14 +137,23 @@ function ready(error, worldData, traffickingData) {
     // event listener for the dropdown. Update choropleth and legend when selection changes. Call createMapAndLegend() with required arguments.
     
     // create Choropleth with default option. Call createMapAndLegend() with required arguments. 
-
-    // draw map
-    svg.selectAll("path")
-        .data(worldData)
+    gCountries.selectAll("path")
+        .data(worldData.features) // Bind the array of features
         .enter()
         .append("path")
-        .attr("class","continent")
-        .attr("d", path);//,
+            .attr("d", path) // The generator reads the geometry.coordinates automatically
+            .attr("fill", "#69b3a2")
+            .attr("stroke", "#fff");
+
+
+
+    // // draw map
+    // svg.selectAll("path")
+    //     .data(worldData)
+    //     .enter()
+    //     .append("path")
+    //     .attr("class","continent")
+    //     .attr("d", path),
     // // draw points
     // svg.selectAll("circle")
     //     .data(traffickingData)
@@ -150,18 +162,18 @@ function ready(error, worldData, traffickingData) {
     //     .attr("class","circles")
     //     .attr("cx", function(d) {return projection([d.Longitude, d.Lattitude])[0];})
     //     .attr("cy", function(d) {return projection([d.Longitude, d.Lattitude])[1];})
-    //     .attr("r", "1px"),
-    // // add labels
-    // svg.selectAll("text")
-    //     .data(traffickingData)
-    //     .enter()
-    //     .append("text")
-    //     .text(function(d) {
-    //         return d.City;
-    //         })
-    //     .attr("x", function(d) {return projection([d.Longitude, d.Lattitude])[0] + 5;})
-    //     .attr("y", function(d) {return projection([d.Longitude, d.Lattitude])[1] + 15;})
-    //     .attr("class","labels");
+    //     .attr("r", "1px"); //,
+    // // // add labels
+    // // svg.selectAll("text")
+    // //     .data(traffickingData)
+    // //     .enter()
+    // //     .append("text")
+    // //     .text(function(d) {
+    // //         return d.City;
+    // //         })
+    // //     .attr("x", function(d) {return projection([d.Longitude, d.Lattitude])[0] + 5;})
+    // //     .attr("y", function(d) {return projection([d.Longitude, d.Lattitude])[1] + 15;})
+    // //     .attr("class","labels");
 
 
 }
