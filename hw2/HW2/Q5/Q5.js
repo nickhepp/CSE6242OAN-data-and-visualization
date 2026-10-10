@@ -212,7 +212,24 @@ function createMapAndLegend(world, traffickingData, selectedYear){
             })
             .attr("stroke", "#333");
 
+
+    const colorLegend = d3.legendColor()
+        .scale(colorScale)          // Pass your scale to the legend generator
+        .shapeWidth(30)             // Customize width of the color block
+        .shapeHeight(20)            // Customize height of the color block
+        .shapePadding(5)            // Vertical spacing between blocks
+        .labelFormat(d3.format(".00f")); // Clean up decimals on thresholds (e.g. "10 to 45")
+    gLegend.call(colorLegend);
+
 /*
+
+Add a vertical legend showing how colors map to the number of incidents for a particular country. The
+legend must update for the quartiles of the selected year, and display values formatted to show precision up to 2
+decimal places. You must use exactly 4 color gradations in your submission. It is recommended, but not required,
+to use d3-legend.min.js (in the lib folder) to create the legend for the scale you use. The legend bars should
+be rectangular in shape. 
+
+
 
     // Display a legend on the right-hand portion of the chart to show how line colors map to years.
     const legendX = width - margin.right + 10; // legend on the right
