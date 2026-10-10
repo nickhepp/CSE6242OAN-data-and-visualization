@@ -44,27 +44,16 @@ let gCountries = svg.append("g")
 
 let gLegend = svg.append("g")
     .attr("id", "legend")
-    .attr("transform", `translate(${margin.left}, ${height + margin.top + 20})`)
+    .attr("transform", `translate(${margin.left}, ${margin.top + 20})`)
     .text("nheppermann3");
 
+// enter code to define tooltip
 // Tooltip text is added when the map is interactive.
 let divTooltip = d3
     .select("body")
     .append("div")
     .attr("id", "tooltip")
     .style("display", "none");
-
-
-
-// <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
-
-
-
-
-
-
-
-// enter code to define tooltip
 
 // enter code to define projection and path required for Choropleth
 // For grading, set the name of functions for projection and path as "projection" and "path"
@@ -91,24 +80,9 @@ Promise.all([
     })
 ]).then(([worldData, traffickingData]) => {
 
-
-/*
-• Each row in wildlife_trafficking.csv represents the number of wildlife trafficking incidents per country in a
-given year, in the form of <Year,Country,Number of Incidents,Average Fine,Average Imprisonment>,
-where
-– Year: the year in which the wildlife trafficking incidents occurred
-– Country: a country in the world, e.g., United States of America.
-– Number of Incidents: the number of wildlife trafficking incidents that occurred in Country in Year.
-– Average Fine: the average fine in USD for wildlife traffickers caught for incidents occurring in Country in Year.
-– Average Imprisonment: the average imprisonment term in years for wildlife traffickers caught for incidents
-occurring in Country in Year.
-*/
-
-
-
-
     // enter code to call ready() with required arguments
     ready(null, worldData, traffickingData);
+
 });
 
 // this function should be called once the data from files have been read
@@ -144,54 +118,41 @@ function ready(error, worldData, traffickingData) {
 
     // create Choropleth with default option. Call createMapAndLegend() with required arguments. 
     createMapAndLegend(worldData, traffickingData, sortedYears[0]);
-
-
-
-    // // draw map
-    // svg.selectAll("path")
-    //     .data(worldData)
-    //     .enter()
-    //     .append("path")
-    //     .attr("class","continent")
-    //     .attr("d", path),
-    // // draw points
-    // svg.selectAll("circle")
-    //     .data(traffickingData)
-    //     .enter()
-    //     .append("circle")
-    //     .attr("class","circles")
-    //     .attr("cx", function(d) {return projection([d.Longitude, d.Lattitude])[0];})
-    //     .attr("cy", function(d) {return projection([d.Longitude, d.Lattitude])[1];})
-    //     .attr("r", "1px"); //,
-    // // // add labels
-    // // svg.selectAll("text")
-    // //     .data(traffickingData)
-    // //     .enter()
-    // //     .append("text")
-    // //     .text(function(d) {
-    // //         return d.City;
-    // //         })
-    // //     .attr("x", function(d) {return projection([d.Longitude, d.Lattitude])[0] + 5;})
-    // //     .attr("y", function(d) {return projection([d.Longitude, d.Lattitude])[1] + 15;})
-    // //     .attr("class","labels");
-
-
 }
 
 // this function should create a Choropleth and legend using the world and traffickingData arguments for a selectedYear
 // also use this function to update Choropleth and legend when a different year is selected from the dropdown
 function createMapAndLegend(world, traffickingData, selectedYear){ 
 
+    const clrGradientCount = 4;
+
     // clear previous entries
     gCountries.selectAll("path").remove();
 
     // enter code to create color scale
-    const allNumIncs = traffickingData.map(td => td.numIncidents);
+    const yearNumIncs = traffickingData
+        .filter(d => d.year === selectedYear)
+        .map(td => td.numIncidents);
+
+    // originally we tried a straight quantile w/o scaling, and all the data was bunched at the left
+    // but we have a very right skewed data set (example year 2022)
+    //.domain(yearNumIncs) <-- results from the left, below 
+    // 1.00 to 1.75
+    // 1.75 to 6.00
+    // 6.00 to 14.25
+    // 14.25 to 360.00
+
+    // so instead of straight linear we goto to a log scale for colors
+    const maxCount = d3.max(yearNumIncs);
+    const maxLogCount = Math.log1p(maxCount);
+    const breaks = d3.range(1, 4).map(i =>
+        Math.expm1(maxLogCount * i / 4)
+    );
     const colorScale = d3.scaleQuantile()
-        .domain(allNumIncs)
+        .domain(breaks)
         // Color them along a gradient of exactly 4 gradations from a single hue, darker colors corresponding to
         // higher incident counts and lighter colors corresponding to lower incident counts
-        .range(d3.schemeBlues[4]); // gets 4 blue shades
+        .range(d3.schemeBlues[clrGradientCount]); // gets 4 blue shades
 
     gCountries.selectAll("path")
         .data(world.features)
@@ -210,7 +171,33 @@ function createMapAndLegend(world, traffickingData, selectedYear){
                     // Many countries have no incidents for some years — these should be colored gray
                     "#ccc";
             })
-            .attr("stroke", "#333");
+            .attr("stroke", "#333")
+            .on("mouseover", function(d) {
+                const countryName = d.properties.name;
+                const matchedTd = traffickingData.find(td =>
+                    td.year === selectedYear && td.country === countryName
+                );
+
+                const numIncs = matchedTd ? matchedTd.numIncidents : "N/A";
+                const avgFine = matchedTd ? '$' + matchedTd.avgFine.toFixed(2) : "N/A";
+                const avgImprisonment = matchedTd ? `${matchedTd.avgImprisonment.toFixed(2)} years` : "N/A";
+
+                divTooltip
+                    .style("display", "block")
+                    .text(`Country: ${countryName}\n
+                            Year: ${selectedYear}\n
+                            Number of Incidents: ${numIncs}\n
+                            Average Fine (USD): ${avgFine}\n
+                            Average imprisonment (Years): ${avgImprisonment}`);
+            })
+            .on("mousemove", function() {
+                divTooltip
+                    .style("left", `${d3.event.pageX + 12}px`)
+                    .style("top", `${d3.event.pageY + 12}px`);
+            })
+            .on("mouseout", function() {
+                divTooltip.style("display", "none");
+            });
 
 
     const colorLegend = d3.legendColor()
@@ -218,7 +205,7 @@ function createMapAndLegend(world, traffickingData, selectedYear){
         .shapeWidth(30)             // Customize width of the color block
         .shapeHeight(20)            // Customize height of the color block
         .shapePadding(5)            // Vertical spacing between blocks
-        .labelFormat(d3.format(".00f")); // Clean up decimals on thresholds (e.g. "10 to 45")
+        .labelFormat(d3.format(".2f")); // Clean up decimals on thresholds (e.g. "10 to 45")
     gLegend.call(colorLegend);
 
 /*
