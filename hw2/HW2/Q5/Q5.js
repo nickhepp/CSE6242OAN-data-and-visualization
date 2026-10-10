@@ -43,7 +43,8 @@ let gCountries = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 let gLegend = svg.append("g")
-    .attr("id", "legend");
+    .attr("id", "legend")
+    .text("nheppermann3");
 
 // Tooltip text is added when the map is interactive.
 let divTooltip = d3
@@ -60,7 +61,7 @@ let divTooltip = d3
 
 
 
-// enter code to create color scale
+
 
 // enter code to define tooltip
 
@@ -82,9 +83,9 @@ Promise.all([
         return {
             country: d["Country of Incident"], // Keep as string
             year: +d.Year,                                // Convert to integer
-            num_incidents: +d.Number_of_Incidents,  // Convert to integer
-            avg_fine: Number.isFinite(+d.Average_Fine) ? +d.Average_Fine : 0,                // Convert to float
-            avg_imprisonment: Number.isFinite(+d.Average_Imprisonment) ? +d.Average_Imprisonment : 0 // Convert to float
+            numIncidents: +d.Number_of_Incidents,  // Convert to integer
+            avgFine: Number.isFinite(+d.Average_Fine) ? +d.Average_Fine : 0,                // Convert to float
+            avgImprisonment: Number.isFinite(+d.Average_Imprisonment) ? +d.Average_Imprisonment : 0 // Convert to float
         };
     })
 ]).then(([worldData, traffickingData]) => {
@@ -137,13 +138,7 @@ function ready(error, worldData, traffickingData) {
     // event listener for the dropdown. Update choropleth and legend when selection changes. Call createMapAndLegend() with required arguments.
     
     // create Choropleth with default option. Call createMapAndLegend() with required arguments. 
-    gCountries.selectAll("path")
-        .data(worldData.features) // Bind the array of features
-        .enter()
-        .append("path")
-            .attr("d", path) // The generator reads the geometry.coordinates automatically
-            .attr("fill", "#69b3a2")
-            .attr("stroke", "#fff");
+    createMapAndLegend(worldData, traffickingData, sortedYears[0]);
 
 
 
@@ -182,6 +177,30 @@ function ready(error, worldData, traffickingData) {
 // also use this function to update Choropleth and legend when a different year is selected from the dropdown
 function createMapAndLegend(world, traffickingData, selectedYear){ 
 
-    
+    // enter code to create color scale
+    //const minInc = d3.min(traffickingData => td)
+
+    const allNumIncs = traffickingData.map(td => td.numIncidents);
+
+    const colorScale = d3.scaleQuantile()
+        .domain(allNumIncs)
+        .range(d3.schemeBlues[4]); // gets 4 blue shades
+
+
+    gCountries.selectAll("path")
+        .data(world.features)
+        .enter()
+        .append("path")
+            .attr("d", path)
+            .attr("fill", d => {
+                const countryName = d.properties.name;
+                const trafficDat = traffickingData;
+                const matchedTd = trafficDat.find(td => 
+                    td.year === selectedYear && td.country === countryName
+                );
+
+                return matchedTd ? colorScale(matchedTd.numIncidents) : "#69b3a2";
+            })
+            .attr("stroke", "#333");
 }
 
