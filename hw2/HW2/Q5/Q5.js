@@ -54,6 +54,9 @@ let divTooltip = d3
 
 
 
+// <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+
+
 
 
 
@@ -63,8 +66,8 @@ let divTooltip = d3
 
 // enter code to define projection and path required for Choropleth
 // For grading, set the name of functions for projection and path as "projection" and "path"
-// var projection = 
-// var path =
+var projection = d3.geoMercator().translate([width/2, height/2]).scale(2200).center([0,40]);
+var path = d3.geoPath().projection(projection);
 
 
 // define any other global variables 
@@ -111,10 +114,56 @@ function ready(error, worldData, traffickingData) {
     // enter code to extract required fields from traffickingData
 
     // enter code to append the years to the dropdown
-    
+    /*
+        • The list options should be obtained from the Year column of the csv file.
+        • Sort the list options in increasing order. Set the default display value to the first option.
+    */
+    const years = [...new Set(traffickingData.map(td => td.year))];
+    const sortedYears = years.sort((a, b) => a - b);
+    yearDropdown.selectAll("option")
+        .data(sortedYears)
+        .enter()
+        .append("option")
+        .attr("value", function(d) { return d; })
+        .text(function(d) { return d; })
+        .property("selected", (d, i) => {
+            return i === 0;
+        });
+
+
     // event listener for the dropdown. Update choropleth and legend when selection changes. Call createMapAndLegend() with required arguments.
     
     // create Choropleth with default option. Call createMapAndLegend() with required arguments. 
+
+    // draw map
+    svg.selectAll("path")
+        .data(worldData)
+        .enter()
+        .append("path")
+        .attr("class","continent")
+        .attr("d", path);//,
+    // // draw points
+    // svg.selectAll("circle")
+    //     .data(traffickingData)
+    //     .enter()
+    //     .append("circle")
+    //     .attr("class","circles")
+    //     .attr("cx", function(d) {return projection([d.Longitude, d.Lattitude])[0];})
+    //     .attr("cy", function(d) {return projection([d.Longitude, d.Lattitude])[1];})
+    //     .attr("r", "1px"),
+    // // add labels
+    // svg.selectAll("text")
+    //     .data(traffickingData)
+    //     .enter()
+    //     .append("text")
+    //     .text(function(d) {
+    //         return d.City;
+    //         })
+    //     .attr("x", function(d) {return projection([d.Longitude, d.Lattitude])[0] + 5;})
+    //     .attr("y", function(d) {return projection([d.Longitude, d.Lattitude])[1] + 15;})
+    //     .attr("class","labels");
+
+
 }
 
 // this function should create a Choropleth and legend using the world and traffickingData arguments for a selectedYear
