@@ -44,8 +44,8 @@ let gCountries = svg.append("g")
 
 let gLegend = svg.append("g")
     .attr("id", "legend")
-    .attr("transform", `translate(${margin.left}, ${margin.top + 20})`)
-    .text("nheppermann3");
+    .attr("transform", `translate(${margin.left}, ${margin.top + 20})`);
+    //.text("nheppermann3");
 
 // enter code to define tooltip
 // Tooltip text is added when the map is interactive.
@@ -57,7 +57,7 @@ let divTooltip = d3
 
 // enter code to define projection and path required for Choropleth
 // For grading, set the name of functions for projection and path as "projection" and "path"
-var projection = d3.geoMercator().translate([width/2, height/2]).scale(2200).center([0,40]);
+var projection = d3.geoMercator();
 var path = d3.geoPath().projection(projection);
 
 
@@ -79,7 +79,7 @@ Promise.all([
         };
     })
 ]).then(([worldData, traffickingData]) => {
-
+    projection.fitSize([width, height], worldData);
     // enter code to call ready() with required arguments
     ready(null, worldData, traffickingData);
 
@@ -188,7 +188,7 @@ function createMapAndLegend(world, traffickingData, selectedYear){
                             Year: ${selectedYear}\n
                             Number of Incidents: ${numIncs}\n
                             Average Fine (USD): ${avgFine}\n
-                            Average imprisonment (Years): ${avgImprisonment}`);
+                            Average Imprisonment (Years): ${avgImprisonment}`);
             })
             .on("mousemove", function() {
                 divTooltip
@@ -215,40 +215,6 @@ legend must update for the quartiles of the selected year, and display values fo
 decimal places. You must use exactly 4 color gradations in your submission. It is recommended, but not required,
 to use d3-legend.min.js (in the lib folder) to create the legend for the scale you use. The legend bars should
 be rectangular in shape. 
-
-
-
-    // Display a legend on the right-hand portion of the chart to show how line colors map to years.
-    const legendX = width - margin.right + 10; // legend on the right
-    const legendY = margin.top;
-    const rowHeight = 20; // vertical spacing between items
-    gLegend.attr("transform", `translate(${legendX}, ${legendY})`);
-
-    // Bind the years and create a container for each row
-    const legendRows = gLegend.selectAll(".legend-row")
-        .data(uniqueYears)
-        .enter()
-        .append("g")
-        .attr("class", "legend-row")
-        .attr("transform", (d, i) => `translate(0, ${i * rowHeight})`);
-
-    // Display a filled circle for each rating-count data point
-    legendRows.append("circle")
-        .attr("cx", 5)
-        .attr("cy", 0)
-        .attr("r", 5)
-        .attr("fill", year => colorScale(year));
-
-    // Paint the year
-    legendRows.append("text")
-        .attr("x", 20)
-        .attr("y", 4)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "12px")
-        .attr("alignment-baseline", "middle")
-        .text(year => year);
-
-
 
 */
 
