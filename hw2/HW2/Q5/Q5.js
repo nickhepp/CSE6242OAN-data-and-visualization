@@ -44,6 +44,7 @@ let gCountries = svg.append("g")
 
 let gLegend = svg.append("g")
     .attr("id", "legend")
+    .attr("transform", `translate(${margin.left}, ${height + margin.top + 20})`)
     .text("nheppermann3");
 
 // Tooltip text is added when the map is interactive.
@@ -136,7 +137,11 @@ function ready(error, worldData, traffickingData) {
 
 
     // event listener for the dropdown. Update choropleth and legend when selection changes. Call createMapAndLegend() with required arguments.
-    
+    yearDropdown.on("change", function() {
+        const selectedYear = +this.value; 
+        createMapAndLegend(worldData, traffickingData, selectedYear);    
+    });
+
     // create Choropleth with default option. Call createMapAndLegend() with required arguments. 
     createMapAndLegend(worldData, traffickingData, sortedYears[0]);
 
@@ -177,15 +182,16 @@ function ready(error, worldData, traffickingData) {
 // also use this function to update Choropleth and legend when a different year is selected from the dropdown
 function createMapAndLegend(world, traffickingData, selectedYear){ 
 
+    // clear previous entries
+    gCountries.selectAll("path").remove();
+
     // enter code to create color scale
-    //const minInc = d3.min(traffickingData => td)
-
     const allNumIncs = traffickingData.map(td => td.numIncidents);
-
     const colorScale = d3.scaleQuantile()
         .domain(allNumIncs)
+        // Color them along a gradient of exactly 4 gradations from a single hue, darker colors corresponding to
+        // higher incident counts and lighter colors corresponding to lower incident counts
         .range(d3.schemeBlues[4]); // gets 4 blue shades
-
 
     gCountries.selectAll("path")
         .data(world.features)
@@ -199,8 +205,50 @@ function createMapAndLegend(world, traffickingData, selectedYear){
                     td.year === selectedYear && td.country === countryName
                 );
 
-                return matchedTd ? colorScale(matchedTd.numIncidents) : "#69b3a2";
+                return matchedTd ? 
+                    colorScale(matchedTd.numIncidents) : 
+                    // Many countries have no incidents for some years — these should be colored gray
+                    "#ccc";
             })
             .attr("stroke", "#333");
+
+/*
+
+    // Display a legend on the right-hand portion of the chart to show how line colors map to years.
+    const legendX = width - margin.right + 10; // legend on the right
+    const legendY = margin.top;
+    const rowHeight = 20; // vertical spacing between items
+    gLegend.attr("transform", `translate(${legendX}, ${legendY})`);
+
+    // Bind the years and create a container for each row
+    const legendRows = gLegend.selectAll(".legend-row")
+        .data(uniqueYears)
+        .enter()
+        .append("g")
+        .attr("class", "legend-row")
+        .attr("transform", (d, i) => `translate(0, ${i * rowHeight})`);
+
+    // Display a filled circle for each rating-count data point
+    legendRows.append("circle")
+        .attr("cx", 5)
+        .attr("cy", 0)
+        .attr("r", 5)
+        .attr("fill", year => colorScale(year));
+
+    // Paint the year
+    legendRows.append("text")
+        .attr("x", 20)
+        .attr("y", 4)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "12px")
+        .attr("alignment-baseline", "middle")
+        .text(year => year);
+
+
+
+*/
+
+
+
 }
 
