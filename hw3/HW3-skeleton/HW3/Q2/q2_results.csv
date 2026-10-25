@@ -57,4 +57,7 @@ hour_of_day,Zone,max_count,
 22,DUMBO/Vinegar Hill,611
 23,Williamsburg (North Side),613
 Part 6: Which 3 different days of the January - in Manhattan - saw the largest percentage increment in pickups compared to previous day,,
-day, percent_change,
+day,percent_change,
+22,51.06260769672602
+2,28.377614471452798
+28,22.939560439560438
