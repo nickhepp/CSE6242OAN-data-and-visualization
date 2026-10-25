@@ -28,8 +28,8 @@ Staten Island,890
 EWR,104
 Part 4: top 2 days of week with the largest number of (daily) average pickups - along with the values of average number of pickups on each of the two days,,
 day_of_week,avg_count,
-,,
-,,
+Thursday,10257.6
+Sunday,9884.75
 Part 5: For each particular hour of a day (0 to 23 - 0 being midnight) - in their order from 0 to 23. Find the zone in Brooklyn borough with the LARGEST number of pickups,,
 hour_of_day,Zone,max_count
 0,,
