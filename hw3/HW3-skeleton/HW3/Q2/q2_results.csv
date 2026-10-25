@@ -18,14 +18,14 @@ LocationID,number_activities,
 75,16326
 244,13964
 Part 3: all the boroughs in the order of having the highest to lowest number of activities,,
-Borough,total_number_activities,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
+Borough,total_number_activities
+Brooklyn,198506
+Manhattan,185146
+Queens,157636
+Bronx,67707
+Unknown,1215
+Staten Island,890
+EWR,104
 Part 4: top 2 days of week with the largest number of (daily) average pickups - along with the values of average number of pickups on each of the two days,,
 day_of_week,avg_count,
 ,,
