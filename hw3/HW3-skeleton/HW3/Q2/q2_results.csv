@@ -7,11 +7,11 @@ DOLocationID,number_of_dropoffs,
 42,3859
 Part 1b: top-5 most popular pickup locations,,
 PULocationID,number_of_pickups,
-,,
-,,
-,,
-,,
-,,
+74,17360
+75,13299
+244,9958
+41,9645
+82,9306
 Part 2: top-3 locations with the maximum overall activity,,
 locationID,total_activity,
 ,,
